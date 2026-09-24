@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VitaPulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: linear-gradient(160deg, #EAF0FF 0%, #F1EAFB 45%, #FBEAF2 100%);
+    --surface: rgba(255,255,255,0.62);
+    --surface-solid: rgba(255,255,255,0.92);
+    --surface-alt: rgba(124,92,252,0.08);
+    --border: rgba(124,92,252,0.16);
+    --text: #241B3A;
+    --text-muted: #746C8C;
+    --accent: #7C5CFC;
+    --accent-strong: #5F3DDB;
+    --accent-light: #ECE6FE;
+    --alert: #E24C71;
+    --alert-light: #FCE4EA;
+    --focus: #7C5CFC;
+    --radius: 20px;
+    --radius-sm: 14px;
+    --shadow-sm: 0 1px 2px rgba(90,60,200,0.06), 0 1px 1px rgba(90,60,200,0.04);
+    --shadow-md: 0 14px 32px rgba(90,60,200,0.14);
+    --blur: 18px;
+    --sidebar-bg: linear-gradient(180deg, #7C5CFC 0%, #5F3DDB 100%);
+    --sidebar-surface: rgba(255,255,255,0.12);
+    --sidebar-active: #FFFFFF;
+    --sidebar-active-text: #5F3DDB;
+    --sidebar-text: #FFFFFF;
+    --sidebar-text-muted: rgba(255,255,255,0.72);
+    --sidebar-accent: #FFFFFF;
+    --sidebar-border: rgba(255,255,255,0.16);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: linear-gradient(160deg, #191233 0%, #221A3B 55%, #2A1930 100%);
+      --surface: rgba(37,28,58,0.55);
+      --surface-solid: rgba(30,23,48,0.92);
+      --surface-alt: rgba(157,130,255,0.12);
+      --border: rgba(157,130,255,0.18);
+      --text: #EDE9FB;
+      --text-muted: #A79BC7;
+      --accent: #9D82FF;
+      --accent-strong: #B7A6FF;
+      --accent-light: #2E2650;
+      --alert: #F0839C;
+      --alert-light: #3A2333;
+      --focus: #9D82FF;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 16px 34px rgba(0,0,0,0.4);
+      --sidebar-bg: linear-gradient(180deg, #7C5CFC 0%, #5F3DDB 100%);
+      --sidebar-surface: rgba(255,255,255,0.12);
+      --sidebar-active: #FFFFFF;
+      --sidebar-active-text: #5F3DDB;
+      --sidebar-text: #FFFFFF;
+      --sidebar-text-muted: rgba(255,255,255,0.72);
+      --sidebar-accent: #FFFFFF;
+      --sidebar-border: rgba(255,255,255,0.16);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: linear-gradient(160deg, #191233 0%, #221A3B 55%, #2A1930 100%);
+    --surface: rgba(37,28,58,0.55);
+    --surface-solid: rgba(30,23,48,0.92);
+    --surface-alt: rgba(157,130,255,0.12);
+    --border: rgba(157,130,255,0.18);
+    --text: #EDE9FB;
+    --text-muted: #A79BC7;
+    --accent: #9D82FF;
+    --accent-strong: #B7A6FF;
+    --accent-light: #2E2650;
+    --alert: #F0839C;
+    --alert-light: #3A2333;
+    --focus: #9D82FF;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 16px 34px rgba(0,0,0,0.4);
+    --sidebar-bg: linear-gradient(180deg, #7C5CFC 0%, #5F3DDB 100%);
+    --sidebar-surface: rgba(255,255,255,0.12);
+    --sidebar-active: #FFFFFF;
+    --sidebar-active-text: #5F3DDB;
+    --sidebar-text: #FFFFFF;
+    --sidebar-text-muted: rgba(255,255,255,0.72);
+    --sidebar-accent: #FFFFFF;
+    --sidebar-border: rgba(255,255,255,0.16);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .data { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  h1, h2, .serif { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.01em; }
+
+  button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .app-shell {
+    display: flex;
+    min-height: 100%;
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--sidebar-bg);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    border-right: 1px solid var(--sidebar-border);
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: -70px; left: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 70%);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+  .sidebar::after {
+    content: "";
+    position: absolute;
+    bottom: -80px; right: -70px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(255,182,213,0.22), transparent 70%);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+  .sidebar > * { position: relative; z-index: 1; }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .brand-logo { display: block; }
+  .brand-mark {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.01em;
+    color: var(--sidebar-text);
+  }
+  .brand-tag {
+    font-size: 12.5px;
+    color: var(--sidebar-text-muted);
+    margin: 0 0 28px 0;
+  }
+  .nav { display: flex; flex-direction: column; gap: 3px; list-style: none; padding: 0; margin: 0; }
+  .nav button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 12px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--sidebar-text-muted);
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav button svg, .nav button .rx-glyph { flex-shrink: 0; }
+  .nav button:hover { background: var(--sidebar-surface); color: var(--sidebar-text); }
+  .nav button.active { background: var(--sidebar-active); color: var(--sidebar-active-text); }
+  .nav button.active svg { stroke: var(--sidebar-active-text); }
+  .nav button svg { stroke: var(--sidebar-text-muted); }
+  .rx-glyph {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    width: 20px;
+    text-align: center;
+    color: inherit;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--sidebar-border);
+  }
+  .sidebar-note {
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--sidebar-text-muted);
+    margin-top: 14px;
+  }
+
+  /* ---- Top bar ---- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+  }
+  .topbar-date { font-size: 13px; color: var(--text-muted); }
+  .clinician { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 600;
+  }
+  .theme-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    margin-left: 14px;
+    color: var(--text-muted);
+    transition: background .15s ease, color .15s ease;
+  }
+  .theme-toggle:hover { background: var(--border); color: var(--text); }
+
+  .content { padding: 32px; max-width: 1080px; width: 100%; margin: 0 auto; overflow-x: hidden; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---- Dashboard hero ---- */
+  .hero { padding: 8px 0 32px 0; margin-bottom: 28px; }
+  .hero h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 500; margin: 0 0 8px 0; line-height: 1.2; }
+  .hero p { color: var(--text-muted); margin: 0; font-size: 15px; }
+
+  .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .quick-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 16px 6px; background: var(--surface);
+    -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);
+    transition: box-shadow .15s ease, transform .15s ease; font-family: inherit;
+  }
+  .quick-tile:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .quick-tile-icon {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center; color: var(--accent-strong); flex-shrink: 0;
+  }
+  .quick-tile-icon svg { stroke: var(--accent-strong); }
+  .quick-tile-label { font-size: 11px; text-align: center; color: var(--text); line-height: 1.3; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+  .stat-card {
+    background: var(--surface);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 20px;
+  }
+  .stat-num { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 28px; color: var(--accent); }
+  .stat-label { font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+
+  .panel {
+    background: var(--surface);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-head h2 { font-size: 16.5px; font-weight: 500; margin: 0; }
+  .panel-body { padding: 6px 22px 16px; }
+
+  .row-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .row-item:last-child { border-bottom: none; }
+  .row-icon {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent-light); color: var(--accent-strong);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .row-time { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--text-muted); width: 68px; flex-shrink: 0; }
+  .row-main { flex: 1; min-width: 0; }
+  .row-title { font-size: 14px; font-weight: 500; }
+  .row-sub { font-size: 12.5px; color: var(--text-muted); margin-top: 1px; }
+  .tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 20px;
+    background: var(--surface-alt); color: var(--text-muted); white-space: nowrap;
+  }
+  .tag::before { content: "●"; font-size: 7px; margin-right: 4px; color: currentColor; vertical-align: middle; }
+  .tag.alert { background: var(--alert-light); color: var(--alert); }
+  .tag.positive { background: var(--accent-light); color: var(--accent-strong); }
+  .empty-state { padding: 24px 0; color: var(--text-muted); font-size: 13.5px; }
+
+  /* ---- Patients list ---- */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 18px; }
+  .search-input {
+    flex: 1; padding: 11px 16px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--surface-solid); font-size: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .table { width: 100%; border-collapse: collapse; }
+  .table th {
+    text-align: left; font-size: 11.5px; font-weight: 500; color: var(--text-muted);
+    padding: 8px 10px; border-bottom: 1px solid var(--border);
+  }
+  .table td { padding: 13px 10px; border-bottom: 1px solid var(--border); font-size: 13.5px; vertical-align: middle; }
+  .table tr:last-child td { border-bottom: none; }
+  .table tr.clickable { transition: background .12s ease; }
+  .table tr.clickable:hover { background: var(--surface-alt); cursor: pointer; }
+  .mrn { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--text-muted); }
+  .patient-name { font-weight: 500; }
+
+  /* ---- Buttons ---- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent); color: white; border: none;
+    border-radius: var(--radius-sm); padding: 10px 18px; font-size: 13.5px; font-weight: 500;
+    transition: background .15s ease;
+  }
+  .btn:hover { background: var(--accent-strong); }
+  .btn.secondary { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border); }
+  .btn.secondary:hover { background: var(--border); }
+  .btn.small { padding: 7px 13px; font-size: 12.5px; }
+
+  /* ---- Patient detail ---- */
+  .back-link {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 13px; padding: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 5px;
+  }
+  .back-link:hover { color: var(--text); }
+  .detail-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
+  .detail-head h1 { font-size: 26px; font-weight: 500; margin: 0 0 4px 0; }
+  .detail-meta { font-size: 13px; color: var(--text-muted); }
+  .detail-meta .mrn { margin-left: 4px; }
+  .grid-2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: start; }
+
+  .pill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { font-size: 12px; padding: 5px 12px; border-radius: 20px; background: var(--surface-alt); border: 1px solid var(--border); }
+  .pill.alert { background: var(--alert-light); color: var(--alert); border-color: transparent; }
+
+  .vitals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 4px 0 6px; }
+  .vital { text-align: left; }
+  .vital-val { font-family: 'IBM Plex Mono', monospace; font-size: 17px; }
+  .vital-label { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .med-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .med-row:last-child { border-bottom: none; }
+  .med-dose { color: var(--text-muted); font-size: 12.5px; }
+
+  .visit-item { padding: 13px 0; border-bottom: 1px solid var(--border); }
+  .visit-item:last-child { border-bottom: none; }
+  .visit-date { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-muted); }
+  .visit-reason { font-size: 13.5px; font-weight: 500; margin: 3px 0 2px; }
+  .visit-note { font-size: 12.5px; color: var(--text-muted); }
+
+  /* ---- Forms ---- */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 12.5px; color: var(--text-muted); }
+  .field input, .field select, .field textarea {
+    padding: 10px 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-solid);
+    transition: border-color .12s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 64px; }
+  .form-actions { display: flex; gap: 10px; margin-top: 6px; }
+
+  .toast {
+    position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--accent-strong); color: white; padding: 13px 22px; border-radius: var(--radius-sm);
+    font-size: 13.5px; opacity: 0; transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none; z-index: 50; box-shadow: var(--shadow-md);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .disclaimer {
+    font-size: 11.5px; color: var(--text-muted); background: var(--surface-alt);
+    border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; margin-top: 28px; line-height: 1.55;
+  }
+
+  /* ---- Form templates ---- */
+  .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .template-card {
+    background: var(--surface); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px; text-align: left; width: 100%; font-family: inherit;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .template-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+  .template-card h3 { margin: 0 0 6px; font-size: 15px; font-weight: 500; }
+  .template-card p { margin: 0; font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
+  .field.checkbox-field { flex-direction: row; align-items: center; gap: 8px; }
+  .field.checkbox-field label { font-size: 13px; color: var(--text); }
+  .form-note { font-size: 12.5px; color: var(--text-muted); background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 15px; margin-bottom: 18px; }
+  .forms-list-row { cursor: pointer; transition: background .12s ease; }
+  .forms-list-row:hover { background: var(--surface-alt); }
+
+  @media (max-width: 780px) {
+    .app-shell { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; flex-direction: row; align-items: center; padding: 14px 16px; overflow-x: auto; }
+    .brand, .brand-tag, .sidebar-footer { display: none; }
+    .nav { flex-direction: row; gap: 4px; }
+    .nav button { white-space: nowrap; }
+    .content { padding: 20px; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .vitals-grid { grid-template-columns: repeat(2, 1fr); }
+    .topbar { padding: 14px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="authScreen" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;">
+  <div style="width:100%; max-width:380px; background:var(--surface); -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur)); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); padding:32px;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+      <svg width="40" height="26" viewBox="0 0 44 28" fill="none" aria-hidden="true">
+        <circle cx="15" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.95"/>
+        <circle cx="29" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.5"/>
+        <path d="M1.5 14H14L18 4.5L23 23.5L27 14H42.5" stroke="var(--text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="serif" style="font-size:22px; font-weight:700;">VitaPulse</span>
+    </div>
+    <p style="font-size:13px; color:var(--text-muted); margin:0 0 24px;">Continuity of care, in one chart.</p>
+
+    <div style="display:flex; gap:8px; margin-bottom:20px;">
+      <button type="button" class="btn secondary" id="showLoginTab" style="flex:1;">Sign in</button>
+      <button type="button" class="btn secondary" id="showSignupTab" style="flex:1;">Create clinic</button>
+    </div>
+
+    <form id="loginForm">
+      <div class="field"><label for="loginEmail">Email</label><input type="email" id="loginEmail" required></div>
+      <div class="field"><label for="loginPassword">Password</label><input type="password" id="loginPassword" required></div>
+      <div id="loginError" style="display:none; color:var(--alert); font-size:12.5px; margin-bottom:10px;"></div>
+      <button type="submit" class="btn" style="width:100%;" id="loginSubmitBtn">Sign in</button>
+    </form>
+
+    <form id="signupForm" style="display:none;">
+      <div class="field"><label for="signupClinic">Clinic name</label><input type="text" id="signupClinic" required></div>
+      <div class="field"><label for="signupName">Your name</label><input type="text" id="signupName" required></div>
+      <div class="field"><label for="signupEmail">Email</label><input type="email" id="signupEmail" required></div>
+      <div class="field"><label for="signupPassword">Password</label><input type="password" id="signupPassword" required minlength="8"></div>
+      <div id="signupError" style="display:none; color:var(--alert); font-size:12.5px; margin-bottom:10px;"></div>
+      <button type="submit" class="btn" style="width:100%;" id="signupSubmitBtn">Create clinic account</button>
+    </form>
+  </div>
+</div>
+
+<div id="appShell" class="app-shell" style="display:none;">
+  <nav class="sidebar">
+    <div>
+      <div class="brand">
+        <svg class="brand-logo" width="52" height="32" viewBox="0 0 44 28" fill="none" aria-hidden="true">
+          <circle cx="15" cy="14" r="10" stroke="var(--sidebar-accent)" stroke-width="2" opacity="0.95"/>
+          <circle cx="29" cy="14" r="10" stroke="var(--sidebar-accent)" stroke-width="2" opacity="0.5"/>
+          <path d="M1.5 14H14L18 4.5L23 23.5L27 14H42.5" stroke="var(--sidebar-text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-mark">VitaPulse</span>
+      </div>
+      <p class="brand-tag">Continuity of care, in one chart.</p>
+    </div>
+    <ul class="nav">
+      <li><button class="nav-btn active" data-view="dashboard">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 11h3.2l1.8-6 3 11 2-9 1.4 4H18" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Dashboard
+      </button></li>
+      <li><button class="nav-btn" data-view="patients">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.6" r="3" stroke-width="1.6"/><path d="M3.8 17c1.3-3.6 3.4-5 6.2-5s4.9 1.4 6.2 5" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Patients
+      </button></li>
+      <li><button class="nav-btn" data-view="chartnotes">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4.5" y="3.2" width="11" height="14.4" rx="1.6" stroke-width="1.6"/><path d="M7.4 2.4h5.2v2.2H7.4z" stroke-width="1.4"/><path d="M7 10.6l1.8 1.8L13 8.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Chart Notes
+      </button></li>
+      <li><button class="nav-btn" data-view="forms">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4.4" y="2.4" width="11.2" height="15.2" rx="1.6" stroke-width="1.6"/><path d="M7 7h6M7 10.4h6M7 13.8h3.4" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Forms
+      </button></li>
+      <li><button class="nav-btn" data-view="schedule">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.6" y="4.2" width="14.8" height="13" rx="1.8" stroke-width="1.6"/><path d="M2.6 8h14.8M6.6 2.4v3.2M13.4 2.4v3.2" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Schedule
+      </button></li>
+      <li><button class="nav-btn" data-view="tasks">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.2 5.6l1.2 1.2 2-2M4.2 10.4l1.2 1.2 2-2M4.2 15.2l1.2 1.2 2-2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.2 6h6M10.2 10.5h6M10.2 15h6" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Tasks
+      </button></li>
+      <li><button class="nav-btn" data-view="labs">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 2.4v5.6l-3.6 7.2a1.8 1.8 0 0 0 1.6 2.6h8.6a1.8 1.8 0 0 0 1.6-2.6l-3.6-7.2V2.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.6 2.4h6.6M5.8 12.4h8.2" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Labs
+      </button></li>
+      <li><button class="nav-btn" data-view="injections">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17l2.5-2.5M11.5 3l5 5-7.7 7.7a2 2 0 0 1-2.8 0l-2.2-2.2a2 2 0 0 1 0-2.8L11.5 3z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.3 5.8l2 2M10.3 7.8l2 2M8.3 9.8l2 2" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Injections
+      </button></li>
+      <li><button class="nav-btn" data-view="referrals">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="6" cy="6.5" r="2.3" stroke-width="1.5"/><circle cx="14.5" cy="6.5" r="2.3" stroke-width="1.5"/><path d="M8.6 6.5h3.5M10.4 5l1.7 1.5-1.7 1.5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.6 16c.6-2.6 2-3.8 3.9-3.8M12 16c.6-2.4 2-3.6 3.9-3.6" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Referrals
+      </button></li>
+      <li><button class="nav-btn" data-view="billing">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.4" stroke-width="1.6"/><path d="M10 5.6v8.8M12.6 7.9c0-1.1-1.1-1.9-2.6-1.9s-2.6.8-2.6 1.8 1 1.5 2.6 1.8c1.6.3 2.6.8 2.6 1.8s-1.1 1.9-2.6 1.9-2.6-.7-2.6-1.8" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Billing
+      </button></li>
+      <li><button class="nav-btn" data-view="reports">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 15.2V9.4M10 15.2V5M15.5 15.2v-3.4" stroke-width="1.6" stroke-linecap="round"/><path d="M2.6 17h14.8" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Reports
+      </button></li>
+      <li><button class="nav-btn" data-view="prescribe">
+        <span class="rx-glyph">℞</span>
+        e-Prescribe
+      </button></li>
+      <li><button class="nav-btn" data-view="team">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6.5" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.5" r="2.1" stroke-width="1.5"/><path d="M2.4 16.5c.9-3.3 2.6-4.6 4.6-4.6s3.7 1.3 4.6 4.6" stroke-width="1.6" stroke-linecap="round"/><path d="M13 12.3c1.8.2 2.9 1.4 3.6 4" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Team
+      </button></li>
+    </ul>
+    <div class="sidebar-footer">
+      <p class="sidebar-note">Shared with your clinic team. Not certified medical-records or e-prescribing software.</p>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-date data" id="topbarDate"></div>
+      <div style="display:flex; align-items:center;">
+        <div class="clinician">
+          <div class="avatar" id="clinicianAvatar">Y</div>
+          <span id="clinicianName">You</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+          <svg id="themeIconMoon" width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M17 11.5A7.3 7.3 0 1 1 8.5 3a5.8 5.8 0 0 0 8.5 8.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          <svg id="themeIconSun" width="17" height="17" viewBox="0 0 20 20" fill="none" style="display:none;"><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M10 1.8v2.4M10 15.8v2.4M18.2 10h-2.4M4.2 10H1.8M15.6 4.4l-1.7 1.7M6.1 13.9l-1.7 1.7M15.6 15.6l-1.7-1.7M6.1 6.1L4.4 4.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <button class="theme-toggle" id="logoutBtn" aria-label="Log out" style="margin-left:8px;">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M8 17H4.5A1.5 1.5 0 0 1 3 15.5v-11A1.5 1.5 0 0 1 4.5 3H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14l4-4-4-4M17 10H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="syncNotice" style="display:none; background:var(--alert-light); color:var(--alert); font-size:12.5px; padding:9px 32px; text-align:center;">Can't reach the server right now — check your connection. Changes may not save until it's back.</div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="hero">
+          <h1 id="greeting" class="serif">Good afternoon, Dr. Torres.</h1>
+          <p id="heroSub">Here's where today stands.</p>
+        </div>
+
+        <div class="quick-grid">
+          <button type="button" class="quick-tile" data-view="patients"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.6" r="3" stroke-width="1.6"/><path d="M3.8 17c1.3-3.6 3.4-5 6.2-5s4.9 1.4 6.2 5" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Patients</span></button>
+          <button type="button" class="quick-tile" data-view="chartnotes"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="4.5" y="3.2" width="11" height="14.4" rx="1.6" stroke-width="1.6"/><path d="M7 10.6l1.8 1.8L13 8.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="quick-tile-label">Chart Notes</span></button>
+          <button type="button" class="quick-tile" data-view="schedule"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.6" y="4.2" width="14.8" height="13" rx="1.8" stroke-width="1.6"/><path d="M2.6 8h14.8M6.6 2.4v3.2M13.4 2.4v3.2" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Calendar</span></button>
+          <button type="button" class="quick-tile" data-view="prescribe"><span class="quick-tile-icon"><span class="rx-glyph" style="color:var(--accent-strong);">℞</span></span><span class="quick-tile-label">Prescriptions</span></button>
+          <button type="button" class="quick-tile" data-view="labs"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M7.5 2.4v5.6l-3.6 7.2a1.8 1.8 0 0 0 1.6 2.6h8.6a1.8 1.8 0 0 0 1.6-2.6l-3.6-7.2V2.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="quick-tile-label">Labs</span></button>
+          <button type="button" class="quick-tile" data-view="injections"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 17l2.5-2.5M11.5 3l5 5-7.7 7.7a2 2 0 0 1-2.8 0l-2.2-2.2a2 2 0 0 1 0-2.8L11.5 3z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="quick-tile-label">Injections</span></button>
+          <button type="button" class="quick-tile" data-view="referrals"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="6" cy="6.5" r="2.3" stroke-width="1.5"/><circle cx="14.5" cy="6.5" r="2.3" stroke-width="1.5"/><path d="M8.6 6.5h3.5" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Referrals</span></button>
+          <button type="button" class="quick-tile" data-view="forms"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="4.4" y="2.4" width="11.2" height="15.2" rx="1.6" stroke-width="1.6"/><path d="M7 7h6M7 10.4h6M7 13.8h3.4" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Forms</span></button>
+          <button type="button" class="quick-tile" data-view="tasks"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4.2 5.6l1.2 1.2 2-2M4.2 10.4l1.2 1.2 2-2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.2 6h6M10.2 10.5h6" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Tasks</span></button>
+          <button type="button" class="quick-tile" data-view="billing"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.4" stroke-width="1.6"/><path d="M10 5.6v8.8" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Billing</span></button>
+          <button type="button" class="quick-tile" data-view="reports"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4.5 15.2V9.4M10 15.2V5M15.5 15.2v-3.4" stroke-width="1.6" stroke-linecap="round"/><path d="M2.6 17h14.8" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Analytics</span></button>
+        </div>
+
+        <div class="stat-row" id="statRow"></div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Today's schedule</h2><button class="btn small secondary" data-view="schedule">View full week</button></div>
+          <div class="panel-body" id="todayList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent activity</h2>
+            <div style="display:flex; gap:8px;">
+              <button class="btn small secondary" data-view="forms">New form</button>
+              <button class="btn small secondary" data-view="prescribe">New prescription</button>
+            </div>
+          </div>
+          <div class="panel-body" id="recentActivity"></div>
+        </div>
+      </section>
+
+      <!-- PATIENTS LIST -->
+      <section class="view" id="view-patients">
+        <div class="toolbar">
+          <input class="search-input" id="patientSearch" placeholder="Search patients by name or MRN">
+        </div>
+        <table class="table">
+          <thead><tr><th>Patient</th><th>MRN</th><th>Date of birth</th><th>Allergies</th><th>Next visit</th></tr></thead>
+          <tbody id="patientTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- PATIENT DETAIL -->
+      <section class="view" id="view-detail">
+        <button class="back-link" data-view="patients">&larr; Back to patients</button>
+        <div class="detail-head">
+          <div>
+            <h1 class="serif" id="detailName"></h1>
+            <div class="detail-meta">Born <span id="detailDob"></span> · <span class="mrn" id="detailMrn"></span></div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn secondary" id="newChartNoteFromDetail">New chart note</button>
+            <button class="btn secondary" id="newFormFromDetail">New form</button>
+            <button class="btn" id="prescribeFromDetail">Prescribe for this patient</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div class="panel">
+              <div class="panel-head"><h2>Vitals — most recent visit</h2></div>
+              <div class="panel-body">
+                <div class="vitals-grid" id="vitalsGrid"></div>
+                <svg id="bpTrend" width="100%" height="46" viewBox="0 0 300 46" preserveAspectRatio="none"></svg>
+                <div class="vital-label">Systolic blood pressure, last 5 visits</div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><h2>Chart notes</h2></div>
+              <div class="panel-body" id="patientChartNotes"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><h2>Visit history</h2></div>
+              <div class="panel-body" id="visitHistory"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><h2>Forms on file</h2></div>
+              <div class="panel-body" id="patientForms"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel">
+              <div class="panel-head"><h2>Allergies</h2></div>
+              <div class="panel-body"><div class="pill-list" id="allergyList"></div></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>Active medications</h2></div>
+              <div class="panel-body" id="medList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCHEDULE -->
+      <section class="view" id="view-schedule">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">This week</h1>
+          <button class="btn" id="addApptBtn">Add appointment</button>
+        </div>
+        <p style="font-size:12.5px;color:var(--text-muted);margin:-8px 0 20px;">Telehealth visits get a "Join video" link, powered by the free Jitsi Meet service — anyone with the link can join, so share it only with the patient.</p>
+        <div id="weekList"></div>
+      </section>
+
+      <!-- ADD APPOINTMENT (inline panel, hidden by default) -->
+      <section class="view" id="view-add-appt">
+        <button class="back-link" data-view="schedule">&larr; Back to schedule</button>
+        <div class="panel">
+          <div class="panel-head"><h2>Add appointment</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="apptForm">
+              <div class="form-grid">
+                <div class="field"><label for="apptPatient">Patient</label>
+                  <select id="apptPatient" required></select>
+                </div>
+                <div class="field"><label for="apptType">Visit type</label>
+                  <select id="apptType">
+                    <option>Office visit</option>
+                    <option>Telehealth</option>
+                    <option>Follow-up</option>
+                    <option>Annual physical</option>
+                  </select>
+                </div>
+                <div class="field"><label for="apptDate">Date</label><input type="date" id="apptDate" required></div>
+                <div class="field"><label for="apptTime">Time</label><input type="time" id="apptTime" required></div>
+                <div class="field full"><label for="apptReason">Reason for visit</label><input type="text" id="apptReason" placeholder="e.g. Blood pressure recheck"></div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn">Schedule visit</button>
+                <button type="button" class="btn secondary" data-view="schedule">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHART NOTES -->
+      <section class="view" id="view-chartnotes">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Chart notes</h1>
+          <button class="btn" id="addChartNoteBtn">New chart note</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Patient</th><th>Type</th><th>Date</th></tr></thead>
+          <tbody id="chartNotesTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- CHART NOTE FORM -->
+      <section class="view" id="view-chartnote-form">
+        <button class="back-link" id="chartNoteBackBtn">&larr; Back to chart notes</button>
+        <div class="panel">
+          <div class="panel-head"><h2 id="chartNotePanelTitle">New chart note</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="chartNoteForm">
+              <div class="form-grid">
+                <div class="field full" id="chartNotePatientRow">
+                  <label for="chartNotePatient">Patient</label>
+                  <select id="chartNotePatient"></select>
+                </div>
+                <div class="field"><label for="chartNoteType">Visit type</label>
+                  <select id="chartNoteType"><option>Office visit</option><option>Telehealth</option><option>Follow-up</option><option>Annual physical</option></select>
+                </div>
+                <div class="field"><label for="chartNoteDate">Date</label><input type="date" id="chartNoteDate"></div>
+                <div class="field full"><label for="chartNoteSubjective">Subjective</label><textarea id="chartNoteSubjective" placeholder="What the patient reports"></textarea></div>
+                <div class="field full"><label for="chartNoteObjective">Objective</label><textarea id="chartNoteObjective" placeholder="Exam findings, vitals"></textarea></div>
+                <div class="field full"><label for="chartNoteAssessment">Assessment</label><textarea id="chartNoteAssessment" placeholder="Clinical impression"></textarea></div>
+                <div class="field full"><label for="chartNotePlan">Plan</label><textarea id="chartNotePlan" placeholder="Next steps, treatment plan"></textarea></div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="chartNoteSubmitBtn">Save note</button></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- TASKS -->
+      <section class="view" id="view-tasks">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Tasks</h1>
+          <button class="btn" id="addTaskBtn">New task</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Task</th><th>Patient</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody id="tasksTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- TASK FORM -->
+      <section class="view" id="view-task-form">
+        <button class="back-link" id="taskBackBtn">&larr; Back to tasks</button>
+        <div class="panel">
+          <div class="panel-head"><h2 id="taskPanelTitle">New task</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="taskForm">
+              <div class="form-grid">
+                <div class="field full"><label for="taskTitle">Title</label><input type="text" id="taskTitle" placeholder="e.g. Call patient with lab results"></div>
+                <div class="field full"><label for="taskPatient">Related patient (optional)</label>
+                  <select id="taskPatient"><option value="">None</option></select>
+                </div>
+                <div class="field"><label for="taskDue">Due date</label><input type="date" id="taskDue"></div>
+                <div class="field"><label for="taskStatus">Status</label>
+                  <select id="taskStatus"><option>To do</option><option>In progress</option><option>Done</option></select>
+                </div>
+                <div class="field full"><label for="taskNotes">Notes (optional)</label><textarea id="taskNotes"></textarea></div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="taskSubmitBtn">Save task</button></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- FORMS GALLERY -->
+      <section class="view" id="view-forms">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Form templates</h1>
+        </div>
+        <p style="font-size:13.5px; color:var(--text-muted); margin:-8px 0 20px;">Pick a template to fill in or attach to a patient's chart.</p>
+        <div class="template-grid" id="templateGrid"></div>
+      </section>
+
+      <!-- FILL / VIEW FORM -->
+      <section class="view" id="view-form-fill">
+        <button class="back-link" id="formBackBtn">&larr; Back</button>
+        <div class="panel">
+          <div class="panel-head"><h2 id="formTitle"></h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <p id="formDesc" style="font-size:13px; color:var(--text-muted); margin:0 0 16px;"></p>
+            <div id="formNote" class="form-note" style="display:none;"></div>
+            <div id="formPatientRow" class="field full" style="margin-bottom:18px;">
+              <label for="formPatientSelect">Patient</label>
+              <select id="formPatientSelect"></select>
+            </div>
+            <form id="formFillForm">
+              <div class="form-grid" id="formFieldsContainer"></div>
+              <div class="form-actions" id="formActions">
+                <button type="submit" class="btn" id="formSubmitBtn">Save form</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- LABS & IMAGING -->
+      <section class="view" id="view-labs">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Labs & imaging</h1>
+          <button class="btn" id="addLabBtn">New order</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Patient</th><th>Test</th><th>Type</th><th>Status</th><th>Ordered</th></tr></thead>
+          <tbody id="labsTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- LAB ORDER / RESULT -->
+      <section class="view" id="view-lab-order">
+        <button class="back-link" id="labBackBtn">&larr; Back to labs</button>
+        <div class="panel">
+          <div class="panel-head"><h2 id="labPanelTitle">New lab or imaging order</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="labOrderForm">
+              <div class="form-grid">
+                <div class="field full" id="labPatientRow">
+                  <label for="labPatient">Patient</label>
+                  <select id="labPatient"></select>
+                </div>
+                <div class="field"><label for="labTestName">Test</label><input type="text" id="labTestName" placeholder="e.g. Complete blood count"></div>
+                <div class="field"><label for="labType">Type</label>
+                  <select id="labType"><option>Lab</option><option>Imaging</option></select>
+                </div>
+                <div class="field" id="labStatusRow" style="display:none;">
+                  <label for="labStatus">Status</label>
+                  <select id="labStatus"><option>Ordered</option><option>Resulted</option></select>
+                </div>
+                <div class="field full" id="labResultRow" style="display:none;">
+                  <label for="labResult">Result</label>
+                  <textarea id="labResult" placeholder="Enter result details once available"></textarea>
+                </div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="labSubmitBtn">Order test</button></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- INJECTIONS -->
+      <section class="view" id="view-injections">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Injections</h1>
+          <button class="btn" id="addInjectionBtn">Log injection</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Patient</th><th>Vaccine / medication</th><th>Site</th><th>Date</th></tr></thead>
+          <tbody id="injectionsTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- INJECTION FORM -->
+      <section class="view" id="view-injection-form">
+        <button class="back-link" id="injectionBackBtn">&larr; Back to injections</button>
+        <div class="panel">
+          <div class="panel-head"><h2>Log injection</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="injectionForm">
+              <div class="form-grid">
+                <div class="field full"><label for="injectionPatient">Patient</label>
+                  <select id="injectionPatient"></select>
+                </div>
+                <div class="field"><label for="injectionName">Vaccine / medication</label><input type="text" id="injectionName" placeholder="e.g. Influenza (Fluzone)"></div>
+                <div class="field"><label for="injectionDose">Dose</label><input type="text" id="injectionDose" placeholder="e.g. 0.5 mL"></div>
+                <div class="field"><label for="injectionSite">Site</label><input type="text" id="injectionSite" placeholder="e.g. Left deltoid"></div>
+                <div class="field"><label for="injectionLot">Lot number (optional)</label><input type="text" id="injectionLot"></div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="injectionSubmitBtn">Save</button></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- REFERRALS -->
+      <section class="view" id="view-referrals">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Referrals</h1>
+          <button class="btn" id="addReferralBtn">New referral</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Patient</th><th>Specialty</th><th>Referred to</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody id="referralsTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- REFERRAL FORM -->
+      <section class="view" id="view-referral-form">
+        <button class="back-link" id="referralBackBtn">&larr; Back to referrals</button>
+        <div class="panel">
+          <div class="panel-head"><h2 id="referralPanelTitle">New referral</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="referralForm">
+              <div class="form-grid">
+                <div class="field full" id="referralPatientRow">
+                  <label for="referralPatient">Patient</label>
+                  <select id="referralPatient"></select>
+                </div>
+                <div class="field"><label for="referralSpecialty">Specialty</label><input type="text" id="referralSpecialty" placeholder="e.g. Cardiology"></div>
+                <div class="field"><label for="referralTo">Referred to</label><input type="text" id="referralTo" placeholder="e.g. Dr. Hana Osei"></div>
+                <div class="field" id="referralStatusRow">
+                  <label for="referralStatus">Status</label>
+                  <select id="referralStatus"><option>Sent</option><option>Scheduled</option><option>Completed</option></select>
+                </div>
+                <div class="field full"><label for="referralReason">Reason</label><textarea id="referralReason"></textarea></div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="referralSubmitBtn">Save referral</button></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- BILLING -->
+      <section class="view" id="view-billing">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Billing</h1>
+          <button class="btn" id="addChargeBtn">New charge</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Patient</th><th>Service</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody id="billingTableBody"></tbody>
+        </table>
+      </section>
+
+      <!-- BILLING CHARGE -->
+      <section class="view" id="view-billing-charge">
+        <button class="back-link" id="chargeBackBtn">&larr; Back to billing</button>
+        <div class="panel">
+          <div class="panel-head"><h2 id="chargePanelTitle">New charge</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="chargeForm">
+              <div class="form-grid">
+                <div class="field full" id="chargePatientRow">
+                  <label for="chargePatient">Patient</label>
+                  <select id="chargePatient"></select>
+                </div>
+                <div class="field full"><label for="chargeDesc">Service / description</label><input type="text" id="chargeDesc" placeholder="e.g. Office visit, established patient"></div>
+                <div class="field"><label for="chargeAmount">Amount</label><input type="text" id="chargeAmount" placeholder="e.g. $145.00"></div>
+                <div class="field"><label for="chargePayer">Payer</label><input type="text" id="chargePayer" placeholder="e.g. Meridian Health Plan"></div>
+                <div class="field"><label for="chargeStatus">Status</label>
+                  <select id="chargeStatus"><option>Pending</option><option>Submitted</option><option>Paid</option><option>Denied</option></select>
+                </div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="chargeSubmitBtn">Save charge</button></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="view" id="view-reports">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Reports</h1>
+        </div>
+        <div class="stat-row" id="reportsStatRow" style="margin-bottom:20px;"></div>
+        <div class="panel">
+          <div class="panel-head"><h2>Compliance snapshot</h2></div>
+          <div class="panel-body" id="complianceSnapshot"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Activity by team member</h2></div>
+          <div class="panel-body" id="teamActivity"></div>
+        </div>
+      </section>
+
+      <!-- E-PRESCRIBE -->
+      <section class="view" id="view-prescribe">
+        <h1 class="serif" style="font-size:24px; margin-bottom:18px;">e-Prescribe</h1>
+        <div class="panel">
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="rxForm">
+              <div class="form-grid">
+                <div class="field full"><label for="rxPatient">Patient</label>
+                  <select id="rxPatient" required></select>
+                </div>
+                <div class="field"><label for="rxMed">Medication</label><input type="text" id="rxMed" placeholder="e.g. Amoxicillin" required></div>
+                <div class="field"><label for="rxDose">Dose</label><input type="text" id="rxDose" placeholder="e.g. 500 mg" required></div>
+                <div class="field"><label for="rxFreq">Frequency</label><input type="text" id="rxFreq" placeholder="e.g. Twice daily" required></div>
+                <div class="field"><label for="rxQty">Quantity</label><input type="text" id="rxQty" placeholder="e.g. 30 tablets"></div>
+                <div class="field full"><label for="rxPharmacy">Pharmacy</label>
+                  <input type="text" id="rxPharmacy" list="pharmacyOptions" placeholder="Type or pick a pharmacy" value="VitaPulse Pharmacy — Main St">
+                  <datalist id="pharmacyOptions">
+                    <option value="CVS Pharmacy">
+                    <option value="Walgreens">
+                    <option value="Rite Aid">
+                    <option value="Walmart Pharmacy">
+                    <option value="Costco Pharmacy">
+                    <option value="Kroger Pharmacy">
+                    <option value="VitaPulse Pharmacy — Main St">
+                    <option value="Riverside Pharmacy">
+                    <option value="Patient's preferred pharmacy on file">
+                  </datalist>
+                </div>
+                <div class="field full"><label for="rxNotes">Notes for pharmacist (optional)</label><textarea id="rxNotes"></textarea></div>
+              </div>
+              <div id="rxWarning" class="form-note" style="display:none; background:var(--alert-light); color:var(--alert); border-color:transparent;"></div>
+              <div class="form-actions">
+                <button type="submit" class="btn">Send prescription</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <p class="disclaimer">The pharmacy field is for your own records — picking "CVS" or "Walgreens" here doesn't send anything to them. The allergy/duplicate-therapy check above is a simple keyword match against this chart, not real clinical decision support — it can miss things and isn't a substitute for judgment. VitaPulse isn't connected to any pharmacy's real system, a payer, or a certified drug-interaction database, and isn't certified e-prescribing software. Route anything that actually needs to reach a pharmacy, or any controlled substance, through your certified e-prescribing system instead.</p>
+      </section>
+
+      <!-- TEAM -->
+      <section class="view" id="view-team">
+        <div class="detail-head">
+          <h1 class="serif" style="font-size:24px;">Team</h1>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>People on this account</h2></div>
+          <div class="panel-body" id="teamList"></div>
+        </div>
+        <div class="panel" id="invitePanel" style="display:none;">
+          <div class="panel-head"><h2>Invite a teammate</h2></div>
+          <div class="panel-body" style="padding-top:16px;">
+            <form id="inviteForm">
+              <div class="form-grid">
+                <div class="field"><label for="inviteName">Full name</label><input type="text" id="inviteName" required></div>
+                <div class="field"><label for="inviteEmail">Email</label><input type="email" id="inviteEmail" required></div>
+                <div class="field"><label for="invitePassword">Temporary password</label><input type="text" id="invitePassword" required minlength="8"></div>
+                <div class="field"><label for="inviteRole">Role</label>
+                  <select id="inviteRole"><option value="practitioner">Practitioner</option><option value="staff">Staff</option></select>
+                </div>
+              </div>
+              <div class="form-actions"><button type="submit" class="btn" id="inviteSubmitBtn">Send invite</button></div>
+            </form>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:14px;">This creates their login directly — share the email and temporary password with them so they can sign in and change it.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  // ============================================================
+  // CONFIG — edit this one line before you deploy
+  // ============================================================
+  var API_BASE = "https://ivn-production.up.railway.app";
+
+  // ============================================================
+  // Auth state
+  // ============================================================
+  var AUTH_KEY = "vitapulse_auth";
+  var authToken = null;
+  var currentUser = null; // {id, name, email, role, clinicId}
+  var pollTimer = null;
+
+  function loadAuthFromStorage() {
+    try {
+      var raw = localStorage.getItem(AUTH_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function saveAuthToStorage(token, user) {
+    try { localStorage.setItem(AUTH_KEY, JSON.stringify({ token: token, user: user })); } catch (e) {}
+  }
+  function clearAuthStorage() {
+    try { localStorage.removeItem(AUTH_KEY); } catch (e) {}
+  }
+
+  function apiFetch(path, options) {
+    options = options || {};
+    var headers = Object.assign({}, options.headers || {});
+    if (options.body) headers["Content-Type"] = "application/json";
+    if (authToken) headers["Authorization"] = "Bearer " + authToken;
+    return fetch(API_BASE + path, Object.assign({}, options, { headers: headers })).then(function (res) {
+      if (res.status === 204) return null;
+      return res.json().catch(function () { return null; }).then(function (body) {
+        if (!res.ok) {
+          if (res.status === 401) handleUnauthorized();
+          var err = new Error((body && body.error) || ("Request failed (" + res.status + ")"));
+          err.status = res.status;
+          throw err;
+        }
+        return body;
+      });
+    });
+  }
+
+  function handleUnauthorized() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    clearAuthStorage();
+    authToken = null;
+    currentUser = null;
+    document.getElementById("appShell").style.display = "none";
+    document.getElementById("authScreen").style.display = "flex";
+  }
+
+  // ============================================================
+  // Date / formatting helpers
+  // ============================================================
+  function daysFromToday(offset, hour, minute) {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + offset);
+    if (typeof hour === "number") d.setHours(hour, minute || 0, 0, 0);
+    return d;
+  }
+  function isoDate(d) { return d.toISOString().slice(0, 10); }
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  }
+  function fmtDob(iso) {
+    if (!iso) return "";
+    var d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+  }
+  function fmtTime(t) {
+    if (!t) return "";
+    var parts = t.split(":"); var h = parseInt(parts[0], 10); var m = parts[1];
+    var suffix = h >= 12 ? "PM" : "AM"; var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ":" + m + " " + suffix;
+  }
+  function telehealthLink(apptId) {
+    return "https://meet.jit.si/vitapulse-visit-" + apptId;
+  }
+  function joinVideoButtonHtml(appt) {
+    if (appt.type !== "Telehealth") return "";
+    return '<a href="' + telehealthLink(appt.id) + '" target="_blank" rel="noopener" class="btn small secondary" style="margin-left:8px;">Join video</a>';
+  }
+  function apptTypeIconHtml(type) {
+    var icons = {
+      "Telehealth": '<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="6" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M12.5 9l5-2.5v7l-5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+      "Follow-up": '<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 0 1 10.2-4.2M16 10a6 6 0 0 1-10.2 4.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14.5 3.5v3h-3M5.5 16.5v-3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      "Annual physical": '<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12.5" rx="1.6" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 11.5l1.6 1.6L12 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      "Office visit": '<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3l7 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8.5V17h10V8.5" stroke="currentColor" stroke-width="1.5"/></svg>'
+    };
+    return icons[type] || icons["Office visit"];
+  }
+  function activityIconHtml(kind) {
+    if (kind === "Prescription") return '<span class="rx-glyph" style="font-size:15px;">℞</span>';
+    return '<svg width="15" height="15" viewBox="0 0 20 20" fill="none"><rect x="4.4" y="2.4" width="11.2" height="15.2" rx="1.6" stroke="currentColor" stroke-width="1.6"/><path d="M7 7h6M7 10.4h6M7 13.8h3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  }
+  function statusTagClass(status) {
+    if (status === "Paid" || status === "Resulted" || status === "Done" || status === "Completed") return "tag positive";
+    if (status === "Denied") return "tag alert";
+    return "tag";
+  }
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    if (showToast._timer) clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(function () { t.classList.remove("show"); }, 2800);
+  }
+
+  // ============================================================
+  // View switching
+  // ============================================================
+  function showView(name) {
+    var views = document.querySelectorAll(".view");
+    for (var i = 0; i < views.length; i++) views[i].classList.remove("active");
+    var target = document.getElementById("view-" + name);
+    if (target) target.classList.add("active");
+    var navBtns = document.querySelectorAll(".nav-btn");
+    for (var j = 0; j < navBtns.length; j++) navBtns[j].classList.toggle("active", navBtns[j].getAttribute("data-view") === name);
+    window.scrollTo(0, 0);
+  }
+  function currentViewId() {
+    var active = document.querySelector(".view.active");
+    return active ? active.id : "";
+  }
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-view]");
+    if (!btn) return;
+    var name = btn.getAttribute("data-view");
+    showView(name);
+    if (name === "patients") renderPatients(document.getElementById("patientSearch").value);
+    if (name === "schedule") renderSchedule();
+    if (name === "labs") renderLabsTable();
+    if (name === "billing") renderBillingTable();
+    if (name === "reports") renderReports();
+    if (name === "chartnotes") renderChartNotesTable();
+    if (name === "tasks") renderTasksTable();
+    if (name === "injections") renderInjectionsTable();
+    if (name === "referrals") renderReferralsTable();
+    if (name === "team") renderTeamList();
+    if (name === "prescribe") populateSelect(document.getElementById("rxPatient"));
+  });
+
+  // ============================================================
+  // Shared state
+  // ============================================================
+  var state = { patients: [], appointments: [], prescriptions: [], forms: [], labs: [], charges: [], chartNotes: [], tasks: [], injections: [], referrals: [] };
+  var teamRoster = [];
+  var teamNameMap = {};
+  var currentPatientId = null;
+  var currentTemplate = null;
+  var pendingPatientId = null;
+  var formReturnTo = null;
+
+  function patientById(id) { return state.patients.filter(function (p) { return p.id === id; })[0]; }
+  function getName(id) { return id ? (teamNameMap[id] || "") : ""; }
+
+  function loadTeam() {
+    return apiFetch("/auth/team").then(function (list) {
+      teamRoster = list || [];
+      teamNameMap = {};
+      teamRoster.forEach(function (u) { teamNameMap[u.id] = u.name; });
+    }).catch(function () {});
+  }
+
+  function loadAll() {
+    var notice = document.getElementById("syncNotice");
+    return Promise.all([
+      apiFetch("/patients"), apiFetch("/appointments"), apiFetch("/prescriptions"), apiFetch("/forms"),
+      apiFetch("/labs"), apiFetch("/charges"), apiFetch("/chart-notes"), apiFetch("/tasks"),
+      apiFetch("/injections"), apiFetch("/referrals"), loadTeam()
+    ]).then(function (r) {
+      state.patients = r[0] || []; state.appointments = r[1] || []; state.prescriptions = r[2] || [];
+      state.forms = r[3] || []; state.labs = r[4] || []; state.charges = r[5] || [];
+      state.chartNotes = r[6] || []; state.tasks = r[7] || []; state.injections = r[8] || []; state.referrals = r[9] || [];
+      if (notice) notice.style.display = "none";
+      renderAllViews();
+    }).catch(function (err) {
+      if (err && err.status === 401) return;
+      if (notice) notice.style.display = "";
+    });
+  }
+
+  function renderAllViews() {
+    renderDashboard();
+    renderPatients(document.getElementById("patientSearch").value);
+    renderSchedule();
+    renderLabsTable();
+    renderBillingTable();
+    renderReports();
+    renderChartNotesTable();
+    renderTasksTable();
+    renderInjectionsTable();
+    renderReferralsTable();
+    renderTeamList();
+    populateSelect(document.getElementById("rxPatient"));
+    if (currentViewId() === "view-detail" && currentPatientId) renderPatientDetail(currentPatientId);
+  }
+
+  // ============================================================
+  // Identity
+  // ============================================================
+  function renderIdentity() {
+    if (!currentUser) return;
+    var name = currentUser.name || "You";
+    var roleLabel = currentUser.role === "owner" ? " · Clinic manager" : (currentUser.role === "staff" ? " · Staff" : " · Practitioner");
+    document.getElementById("clinicianName").textContent = name + roleLabel;
+    var initials = name.trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join("").toUpperCase() || "Y";
+    var avatarEl = document.getElementById("clinicianAvatar");
+    avatarEl.textContent = initials;
+    avatarEl.style.background = "var(--accent)";
+  }
+
+  // ============================================================
+  // Auth screen wiring
+  // ============================================================
+  document.getElementById("showLoginTab").addEventListener("click", function () {
+    document.getElementById("loginForm").style.display = "";
+    document.getElementById("signupForm").style.display = "none";
+  });
+  document.getElementById("showSignupTab").addEventListener("click", function () {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("signupForm").style.display = "";
+  });
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = document.getElementById("loginSubmitBtn");
+    var errEl = document.getElementById("loginError");
+    errEl.style.display = "none";
+    btn.disabled = true; btn.textContent = "Signing in...";
+    apiFetch("/auth/login", { method: "POST", body: JSON.stringify({
+      email: document.getElementById("loginEmail").value,
+      password: document.getElementById("loginPassword").value
+    }) }).then(function (res) {
+      authToken = res.token; currentUser = res.user;
+      saveAuthToStorage(authToken, currentUser);
+      startApp();
+    }).catch(function (err) {
+      errEl.textContent = err.message || "Couldn't sign in.";
+      errEl.style.display = "";
+    }).finally(function () {
+      btn.disabled = false; btn.textContent = "Sign in";
+    });
+  });
+
+  document.getElementById("signupForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = document.getElementById("signupSubmitBtn");
+    var errEl = document.getElementById("signupError");
+    errEl.style.display = "none";
+    btn.disabled = true; btn.textContent = "Creating...";
+    apiFetch("/auth/signup", { method: "POST", body: JSON.stringify({
+      clinicName: document.getElementById("signupClinic").value,
+      name: document.getElementById("signupName").value,
+      email: document.getElementById("signupEmail").value,
+      password: document.getElementById("signupPassword").value
+    }) }).then(function (res) {
+      authToken = res.token; currentUser = res.user;
+      saveAuthToStorage(authToken, currentUser);
+      startApp();
+    }).catch(function (err) {
+      errEl.textContent = err.message || "Couldn't create the account.";
+      errEl.style.display = "";
+    }).finally(function () {
+      btn.disabled = false; btn.textContent = "Create clinic account";
+    });
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", function () {
+    clearAuthStorage();
+    window.location.reload();
+  });
+
+  function startApp() {
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("appShell").style.display = "flex";
+    renderIdentity();
+    renderFormsGallery();
+    loadAll();
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(loadAll, 20000);
+  }
+
+  // ============================================================
+  // Dashboard
+  // ============================================================
+  function renderDashboard() {
+    var now = new Date();
+    var hour = now.getHours();
+    var greeting = hour < 12 ? "Good morning" : (hour < 17 ? "Good afternoon" : "Good evening");
+    var firstName = currentUser ? (currentUser.name || "").split(" ")[0] : "";
+    document.getElementById("greeting").textContent = greeting + (firstName ? ", " + firstName + "." : ".");
+    document.getElementById("topbarDate").textContent = now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+
+    var todayIso = isoDate(daysFromToday(0));
+    var todays = state.appointments.filter(function (a) { return a.date === todayIso; }).sort(function (a, b) { return a.time.localeCompare(b.time); });
+
+    document.getElementById("heroSub").textContent = todays.length
+      ? todays.length + " visit" + (todays.length === 1 ? "" : "s") + " on today's schedule."
+      : "Nothing on today's schedule yet.";
+
+    var weekAhead = state.appointments.filter(function (a) {
+      var d = new Date(a.date + "T00:00:00"); return d >= daysFromToday(0) && d < daysFromToday(7);
+    }).length;
+
+    var stats = [
+      { num: todays.length, label: "Appointments today" },
+      { num: weekAhead, label: "Scheduled this week" },
+      { num: state.prescriptions.length, label: "Prescriptions on file" },
+      { num: state.patients.length, label: "Patients in panel" }
+    ];
+    document.getElementById("statRow").innerHTML = stats.map(function (s) {
+      return '<div class="stat-card"><div class="stat-num data">' + s.num + '</div><div class="stat-label">' + s.label + '</div></div>';
+    }).join("");
+
+    var todayList = document.getElementById("todayList");
+    todayList.innerHTML = !todays.length
+      ? '<div class="empty-state">No visits scheduled for today. Add one from the Schedule tab.</div>'
+      : todays.map(function (a) {
+          var p = patientById(a.patientId);
+          return '<div class="row-item"><div class="row-icon">' + apptTypeIconHtml(a.type) + '</div><div class="row-time data">' + fmtTime(a.time) + '</div>' +
+            '<div class="row-main"><div class="row-title">' + (p ? p.name : "Unknown patient") + '</div><div class="row-sub">' + a.reason + '</div></div>' +
+            '<span class="tag">' + a.type + '</span>' + joinVideoButtonHtml(a) + '</div>';
+        }).join("");
+
+    var rxItems = state.prescriptions.map(function (rx) {
+      var p = patientById(rx.patientId); var byName = getName(rx.createdById);
+      return { date: rx.date, kind: "Prescription", title: rx.medication + " " + rx.dose, sub: (p ? p.name : "Unknown patient") + " · " + rx.pharmacy + (byName ? " · " + byName : ""), formId: null };
+    });
+    var formItems = state.forms.map(function (f) {
+      var p = patientById(f.patientId); var byName = getName(f.createdById);
+      return { date: f.date, kind: "Form", title: f.templateName, sub: (p ? p.name : "Unknown patient") + (byName ? " · " + byName : ""), formId: f.id };
+    });
+    var activity = rxItems.concat(formItems).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }).slice(0, 5);
+    var activityEl = document.getElementById("recentActivity");
+    activityEl.innerHTML = !activity.length
+      ? '<div class="empty-state">Nothing sent yet — try a prescription or a form.</div>'
+      : activity.map(function (item) {
+          var rowClass = item.formId ? "row-item forms-list-row" : "row-item";
+          var dataAttr = item.formId ? ' data-form="' + item.formId + '"' : "";
+          return '<div class="' + rowClass + '"' + dataAttr + '><div class="row-icon">' + activityIconHtml(item.kind) + '</div><div class="row-time data">' + fmtDate(item.date) + '</div>' +
+            '<div class="row-main"><div class="row-title">' + item.title + '</div><div class="row-sub">' + item.sub + '</div></div>' +
+            '<span class="tag">' + item.kind + '</span></div>';
+        }).join("");
+  }
+  document.getElementById("recentActivity").addEventListener("click", function (e) {
+    var row = e.target.closest("[data-form]");
+    if (row) viewSubmittedForm(row.getAttribute("data-form"));
+  });
+
+  // ============================================================
+  // Patients
+  // ============================================================
+  function renderPatients(filter) {
+    var body = document.getElementById("patientTableBody");
+    var q = (filter || "").toLowerCase();
+    var list = state.patients.filter(function (p) { return !q || p.name.toLowerCase().indexOf(q) > -1 || (p.mrn || "").toLowerCase().indexOf(q) > -1; });
+    if (!list.length) {
+      body.innerHTML = '<tr><td colspan="5"><div class="empty-state">' + (state.patients.length ? "No patients match that search." : "No patients yet — add one from Forms.") + '</div></td></tr>';
+      return;
+    }
+    body.innerHTML = list.map(function (p) {
+      var next = state.appointments.filter(function (a) { return a.patientId === p.id && new Date(a.date + "T00:00:00") >= daysFromToday(0); })
+        .sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); })[0];
+      var allergyHtml = (p.allergies && p.allergies.length) ? p.allergies.map(function (a) { return '<span class="tag alert">' + a + '</span>'; }).join(" ") : '<span class="tag">None known</span>';
+      return '<tr class="clickable" data-open="' + p.id + '">' +
+        '<td class="patient-name">' + p.name + '</td>' + '<td class="mrn">' + p.mrn + '</td>' + '<td>' + fmtDob(p.dob) + '</td>' + '<td>' + allergyHtml + '</td>' +
+        '<td>' + (next ? fmtDate(next.date) + ' · ' + fmtTime(next.time) : '<span class="row-sub">None scheduled</span>') + '</td></tr>';
+    }).join("");
+  }
+  document.getElementById("patientSearch").addEventListener("input", function (e) { renderPatients(e.target.value); });
+  document.getElementById("patientTableBody").addEventListener("click", function (e) {
+    var row = e.target.closest("[data-open]"); if (row) openPatient(row.getAttribute("data-open"));
+  });
+
+  function renderPatientDetail(id) {
+    var p = patientById(id); if (!p) return;
+    document.getElementById("detailName").textContent = p.name;
+    document.getElementById("detailDob").textContent = fmtDob(p.dob);
+    document.getElementById("detailMrn").textContent = p.mrn;
+    document.getElementById("allergyList").innerHTML = (p.allergies && p.allergies.length) ? p.allergies.map(function (a) { return '<span class="pill alert">' + a + '</span>'; }).join("") : '<span class="pill">None known</span>';
+    document.getElementById("medList").innerHTML = (p.meds && p.meds.length) ? p.meds.map(function (m) { return '<div class="med-row"><span>' + m.name + '</span><span class="med-dose">' + m.dose + ' · ' + m.freq + '</span></div>'; }).join("") : '<div class="empty-state">No active medications on file.</div>';
+    var v = p.vitals && Object.keys(p.vitals).length ? p.vitals : { bp: "—", bpTrend: [0, 0, 0, 0, 0], hr: "—", temp: "—", weight: "—" };
+    document.getElementById("vitalsGrid").innerHTML =
+      '<div class="vital"><div class="vital-val data">' + v.bp + '</div><div class="vital-label">Blood pressure</div></div>' +
+      '<div class="vital"><div class="vital-val data">' + v.hr + '</div><div class="vital-label">Heart rate</div></div>' +
+      '<div class="vital"><div class="vital-val data">' + v.temp + '</div><div class="vital-label">Temperature</div></div>' +
+      '<div class="vital"><div class="vital-val data">' + v.weight + '</div><div class="vital-label">Weight</div></div>';
+    drawTrend((v.bpTrend && v.bpTrend.length) ? v.bpTrend : [0, 0, 0, 0, 0]);
+    document.getElementById("visitHistory").innerHTML = (p.visits && p.visits.length) ? p.visits.map(function (vi) {
+      return '<div class="visit-item"><div class="visit-date">' + fmtDate(vi.date) + '</div><div class="visit-reason">' + vi.reason + '</div><div class="visit-note">' + vi.note + '</div></div>';
+    }).join("") : '<div class="empty-state">No past visits on file.</div>';
+    renderPatientChartNotes(p.id);
+    renderPatientForms(p.id);
+  }
+  function openPatient(id) {
+    currentPatientId = id;
+    renderPatientDetail(id);
+    showView("detail");
+  }
+  function drawTrend(values) {
+    var svg = document.getElementById("bpTrend");
+    var w = 300, h = 46, pad = 6;
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+    if (min === max) { min -= 5; max += 5; }
+    var step = (w - pad * 2) / (values.length - 1);
+    var pts = values.map(function (v, i) {
+      var x = pad + i * step; var y = h - pad - ((v - min) / (max - min)) * (h - pad * 2);
+      return x.toFixed(1) + "," + y.toFixed(1);
+    });
+    var accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+    svg.innerHTML = '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + accent + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+      pts.map(function (p) { var xy = p.split(","); return '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="2.6" fill="' + accent + '"/>'; }).join("");
+  }
+
+  // ============================================================
+  // Chart notes
+  // ============================================================
+  var currentChartNoteId = null;
+  function openNewChartNote() {
+    currentChartNoteId = null;
+    document.getElementById("chartNotePanelTitle").textContent = "New chart note";
+    document.getElementById("chartNoteSubmitBtn").textContent = "Save note";
+    document.getElementById("chartNotePatientRow").style.display = "";
+    populateSelect(document.getElementById("chartNotePatient"));
+    if (pendingPatientId) document.getElementById("chartNotePatient").value = pendingPatientId;
+    pendingPatientId = null;
+    document.getElementById("chartNoteType").value = "Office visit";
+    document.getElementById("chartNoteDate").value = isoDate(daysFromToday(0));
+    document.getElementById("chartNoteSubjective").value = "";
+    document.getElementById("chartNoteObjective").value = "";
+    document.getElementById("chartNoteAssessment").value = "";
+    document.getElementById("chartNotePlan").value = "";
+    showView("chartnote-form");
+  }
+  document.getElementById("addChartNoteBtn").addEventListener("click", openNewChartNote);
+  document.getElementById("newChartNoteFromDetail").addEventListener("click", function () {
+    pendingPatientId = currentPatientId; formReturnTo = currentPatientId; openNewChartNote();
+  });
+  function openChartNote(id) {
+    var note = state.chartNotes.filter(function (n) { return n.id === id; })[0]; if (!note) return;
+    currentChartNoteId = id; formReturnTo = note.patientId;
+    var p = patientById(note.patientId);
+    document.getElementById("chartNotePanelTitle").textContent = (p ? p.name : "Patient") + " — " + note.type;
+    document.getElementById("chartNoteSubmitBtn").textContent = "Save";
+    document.getElementById("chartNotePatientRow").style.display = "none";
+    document.getElementById("chartNoteType").value = note.type;
+    document.getElementById("chartNoteDate").value = note.date;
+    document.getElementById("chartNoteSubjective").value = note.subjective || "";
+    document.getElementById("chartNoteObjective").value = note.objective || "";
+    document.getElementById("chartNoteAssessment").value = note.assessment || "";
+    document.getElementById("chartNotePlan").value = note.plan || "";
+    showView("chartnote-form");
+  }
+  document.getElementById("chartNoteBackBtn").addEventListener("click", function () {
+    if (formReturnTo) { var pid = formReturnTo; formReturnTo = null; openPatient(pid); } else { showView("chartnotes"); }
+  });
+  document.getElementById("chartNoteForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var submitBtn = document.getElementById("chartNoteSubmitBtn"); submitBtn.disabled = true;
+    var payload = {
+      type: document.getElementById("chartNoteType").value,
+      date: document.getElementById("chartNoteDate").value || isoDate(daysFromToday(0)),
+      subjective: document.getElementById("chartNoteSubjective").value,
+      objective: document.getElementById("chartNoteObjective").value,
+      assessment: document.getElementById("chartNoteAssessment").value,
+      plan: document.getElementById("chartNotePlan").value
+    };
+    var req = currentChartNoteId
+      ? apiFetch("/chart-notes/" + currentChartNoteId, { method: "PATCH", body: JSON.stringify(payload) })
+      : apiFetch("/chart-notes", { method: "POST", body: JSON.stringify(Object.assign({ patientId: document.getElementById("chartNotePatient").value }, payload)) });
+    var patientIdForReturn = currentChartNoteId ? null : document.getElementById("chartNotePatient").value;
+    req.then(function () {
+      showToast(currentChartNoteId ? "Chart note updated." : "Chart note saved.");
+      var pid = patientIdForReturn || formReturnTo; formReturnTo = null;
+      return loadAll().then(function () { if (pid) openPatient(pid); else showView("chartnotes"); });
+    }).catch(function () { showToast("Couldn't save — please try again."); })
+      .finally(function () { submitBtn.disabled = false; });
+  });
+  function renderChartNotesTable() {
+    var body = document.getElementById("chartNotesTableBody");
+    var list = state.chartNotes.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    if (!list.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">No chart notes yet.</div></td></tr>'; return; }
+    body.innerHTML = list.map(function (n) {
+      var p = patientById(n.patientId);
+      return '<tr class="clickable" data-note="' + n.id + '"><td class="patient-name">' + (p ? p.name : "Unknown patient") + '</td><td>' + n.type + '</td><td>' + fmtDate(n.date) + '</td></tr>';
+    }).join("");
+  }
+  document.getElementById("chartNotesTableBody").addEventListener("click", function (e) { var row = e.target.closest("[data-note]"); if (row) openChartNote(row.getAttribute("data-note")); });
+  function renderPatientChartNotes(patientId) {
+    var list = state.chartNotes.filter(function (n) { return n.patientId === patientId; }).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    var el = document.getElementById("patientChartNotes");
+    el.innerHTML = !list.length ? '<div class="empty-state">No chart notes yet.</div>' : list.map(function (n) {
+      return '<div class="row-item forms-list-row" data-note="' + n.id + '"><div class="row-time data">' + fmtDate(n.date) + '</div><div class="row-main"><div class="row-title">' + n.type + '</div></div></div>';
+    }).join("");
+  }
+  document.getElementById("patientChartNotes").addEventListener("click", function (e) { var row = e.target.closest("[data-note]"); if (row) openChartNote(row.getAttribute("data-note")); });
+
+  // ============================================================
+  // Schedule
+  // ============================================================
+  function renderSchedule() {
+    var days = []; for (var i = 0; i < 7; i++) days.push(daysFromToday(i));
+    document.getElementById("weekList").innerHTML = days.map(function (d) {
+      var iso = isoDate(d);
+      var dayAppts = state.appointments.filter(function (a) { return a.date === iso; }).sort(function (a, b) { return a.time.localeCompare(b.time); });
+      var rows = dayAppts.length ? dayAppts.map(function (a) {
+        var p = patientById(a.patientId);
+        return '<div class="row-item"><div class="row-icon">' + apptTypeIconHtml(a.type) + '</div><div class="row-time data">' + fmtTime(a.time) + '</div>' +
+          '<div class="row-main"><div class="row-title">' + (p ? p.name : "Unknown patient") + '</div><div class="row-sub">' + a.reason + '</div></div>' +
+          '<span class="tag">' + a.type + '</span>' + joinVideoButtonHtml(a) + '</div>';
+      }).join("") : '<div class="empty-state">No visits scheduled.</div>';
+      return '<div class="panel"><div class="panel-head"><h2>' + fmtDate(iso) + '</h2></div><div class="panel-body">' + rows + '</div></div>';
+    }).join("");
+  }
+  document.getElementById("addApptBtn").addEventListener("click", function () {
+    populateSelect(document.getElementById("apptPatient"));
+    document.getElementById("apptDate").value = isoDate(daysFromToday(0));
+    showView("add-appt");
+  });
+  document.getElementById("apptForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var appt = {
+      patientId: document.getElementById("apptPatient").value,
+      date: document.getElementById("apptDate").value,
+      time: document.getElementById("apptTime").value,
+      type: document.getElementById("apptType").value,
+      reason: document.getElementById("apptReason").value || "Office visit"
+    };
+    var formEl = e.target;
+    apiFetch("/appointments", { method: "POST", body: JSON.stringify(appt) }).then(function () {
+      formEl.reset(); showToast("Appointment scheduled.");
+      return loadAll().then(function () { showView("schedule"); });
+    }).catch(function () { showToast("Couldn't save — please try again."); });
+  });
+
+  // ============================================================
+  // Forms (templates + gallery + fill)
+  // ============================================================
+  var formTemplates = [
+    { id: "new-patient", name: "New Patient Registration", isNewPatient: true, desc: "Capture demographics, contact, and insurance for a first visit. Saving this creates a new patient.",
+      fields: [
+        { id: "fullName", label: "Full name", type: "text" }, { id: "dob", label: "Date of birth", type: "date" },
+        { id: "sex", label: "Sex", type: "select", options: ["Female", "Male", "Other", "Prefer not to say"] },
+        { id: "phone", label: "Phone number", type: "tel" }, { id: "email", label: "Email address", type: "email" },
+        { id: "address", label: "Home address", type: "text", full: true },
+        { id: "emergencyContact", label: "Emergency contact name", type: "text" }, { id: "emergencyPhone", label: "Emergency contact phone", type: "tel" },
+        { id: "insuranceProvider", label: "Insurance provider", type: "text" }, { id: "policyNumber", label: "Policy number", type: "text" },
+        { id: "reasonForVisit", label: "Reason for first visit", type: "textarea", full: true }
+      ] },
+    { id: "medical-history", name: "Medical History Update", isNewPatient: false, desc: "Chronic conditions, past surgeries, family history, and medications to add to the chart.",
+      fields: [
+        { id: "conditions", label: "Chronic conditions", type: "textarea", full: true }, { id: "surgeries", label: "Past surgeries or hospitalizations", type: "textarea", full: true },
+        { id: "familyHistory", label: "Family medical history", type: "textarea", full: true }, { id: "currentMeds", label: "Medications not already on file", type: "textarea", full: true },
+        { id: "allergies", label: "New allergies to add", type: "text" }, { id: "smoking", label: "Smoking status", type: "select", options: ["Never", "Former", "Current"] },
+        { id: "alcohol", label: "Alcohol use", type: "select", options: ["None", "Occasional", "Regular"] }
+      ] },
+    { id: "consent-treatment", name: "Consent for Treatment", isNewPatient: false, desc: "Standard consent acknowledgment signed before treatment begins.",
+      fields: [ { id: "acknowledge", label: "I consent to examination and treatment by this practice.", type: "checkbox", full: true },
+        { id: "signature", label: "Signature (type full name)", type: "text" }, { id: "date", label: "Date signed", type: "date" } ] },
+    { id: "hipaa", name: "HIPAA Privacy Acknowledgment", isNewPatient: false, desc: "Confirms the patient received the Notice of Privacy Practices.",
+      fields: [ { id: "acknowledge", label: "I acknowledge receipt of the Notice of Privacy Practices.", type: "checkbox", full: true },
+        { id: "signature", label: "Signature (type full name)", type: "text" }, { id: "date", label: "Date signed", type: "date" } ] },
+    { id: "insurance-update", name: "Insurance & Demographics Update", isNewPatient: false, desc: "Refresh contact details, address, and insurance on file.",
+      fields: [ { id: "address", label: "Home address", type: "text", full: true }, { id: "phone", label: "Phone number", type: "tel" }, { id: "employer", label: "Employer", type: "text" },
+        { id: "insuranceProvider", label: "Insurance provider", type: "text" }, { id: "policyNumber", label: "Policy number", type: "text" }, { id: "groupNumber", label: "Group number", type: "text" } ] },
+    { id: "wellness", name: "Annual Wellness Questionnaire", isNewPatient: false, desc: "Lifestyle and review-of-systems questions for the yearly physical.",
+      fields: [ { id: "exercise", label: "Exercise frequency", type: "select", options: ["Rarely", "1–2x/week", "3–4x/week", "5+/week"] },
+        { id: "sleep", label: "Average sleep", type: "select", options: ["Under 5 hrs", "5–7 hrs", "7–9 hrs", "9+ hrs"] }, { id: "stress", label: "Stress level", type: "select", options: ["Low", "Moderate", "High"] },
+        { id: "diet", label: "Diet notes", type: "textarea", full: true }, { id: "reviewOfSystems", label: "Symptoms to flag", type: "textarea", full: true } ] },
+    { id: "refill", name: "Medication Refill Request", isNewPatient: false, desc: "Patient-initiated request to refill an existing prescription.",
+      fields: [ { id: "medication", label: "Medication", type: "text" }, { id: "dose", label: "Dose", type: "text" }, { id: "pharmacy", label: "Preferred pharmacy", type: "text" },
+        { id: "urgency", label: "Urgency", type: "select", options: ["Routine", "Needed this week", "Urgent"] } ] },
+    { id: "referral", name: "Referral Request", isNewPatient: false, desc: "Request a referral to a specialist on the patient's behalf.",
+      fields: [ { id: "specialty", label: "Specialty needed", type: "text" }, { id: "preferredProvider", label: "Preferred provider (optional)", type: "text" },
+        { id: "urgency", label: "Urgency", type: "select", options: ["Routine", "Soon", "Urgent"] }, { id: "reason", label: "Reason for referral", type: "textarea", full: true } ] }
+  ];
+  function templateById(id) { return formTemplates.filter(function (t) { return t.id === id; })[0]; }
+  function fieldHtml(f, val, readonly) {
+    val = (val === undefined || val === null) ? "" : val;
+    var dis = readonly ? "disabled" : ""; var cls = "field" + (f.full ? " full" : "");
+    if (f.type === "checkbox") return '<div class="' + cls + ' checkbox-field"><input type="checkbox" id="f_' + f.id + '" ' + (val ? "checked" : "") + " " + dis + '><label for="f_' + f.id + '">' + f.label + "</label></div>";
+    if (f.type === "select") { var opts = f.options.map(function (o) { return '<option ' + (o === val ? "selected" : "") + '>' + o + "</option>"; }).join(""); return '<div class="' + cls + '"><label for="f_' + f.id + '">' + f.label + '</label><select id="f_' + f.id + '" ' + dis + ">" + opts + "</select></div>"; }
+    if (f.type === "textarea") return '<div class="' + cls + '"><label for="f_' + f.id + '">' + f.label + '</label><textarea id="f_' + f.id + '" ' + dis + ">" + val + "</textarea></div>";
+    return '<div class="' + cls + '"><label for="f_' + f.id + '">' + f.label + '</label><input type="' + f.type + '" id="f_' + f.id + '" value="' + val + '" ' + dis + "></div>";
+  }
+  function renderFormFields(fields, values, readonly) {
+    document.getElementById("formFieldsContainer").innerHTML = fields.map(function (f) { return fieldHtml(f, values ? values[f.id] : "", readonly); }).join("");
+  }
+  function collectFormValues(fields) {
+    var vals = {}; fields.forEach(function (f) { var el = document.getElementById("f_" + f.id); if (!el) return; vals[f.id] = f.type === "checkbox" ? el.checked : el.value; }); return vals;
+  }
+  function renderFormsGallery() {
+    document.getElementById("templateGrid").innerHTML = formTemplates.map(function (t) { return '<button type="button" class="template-card" data-template="' + t.id + '"><h3>' + t.name + '</h3><p>' + t.desc + '</p></button>'; }).join("");
+  }
+  document.getElementById("templateGrid").addEventListener("click", function (e) { var card = e.target.closest("[data-template]"); if (card) openFormTemplate(card.getAttribute("data-template")); });
+  function openFormTemplate(templateId) {
+    currentTemplate = templateById(templateId); if (!currentTemplate) return;
+    document.getElementById("formTitle").textContent = currentTemplate.name;
+    document.getElementById("formDesc").textContent = currentTemplate.desc;
+    document.getElementById("formSubmitBtn").style.display = ""; document.getElementById("formSubmitBtn").disabled = false;
+    document.getElementById("formSubmitBtn").textContent = currentTemplate.isNewPatient ? "Add patient" : "Save form";
+    var noteEl = document.getElementById("formNote"); var patientRow = document.getElementById("formPatientRow");
+    if (currentTemplate.isNewPatient) { patientRow.style.display = "none"; noteEl.style.display = ""; noteEl.textContent = "Saving this form creates a new patient record in the panel."; }
+    else { noteEl.style.display = "none"; patientRow.style.display = ""; populateSelect(document.getElementById("formPatientSelect")); if (pendingPatientId) document.getElementById("formPatientSelect").value = pendingPatientId; }
+    pendingPatientId = null;
+    renderFormFields(currentTemplate.fields, {}, false);
+    showView("form-fill");
+  }
+  function viewSubmittedForm(formId) {
+    var form = state.forms.filter(function (f) { return f.id === formId; })[0]; if (!form) return;
+    currentTemplate = templateById(form.templateId); if (!currentTemplate) return;
+    formReturnTo = form.patientId; var p = patientById(form.patientId);
+    document.getElementById("formTitle").textContent = currentTemplate.name;
+    document.getElementById("formDesc").textContent = "Submitted " + fmtDate(form.date) + (p ? " · " + p.name : "") + ".";
+    document.getElementById("formSubmitBtn").style.display = "none";
+    document.getElementById("formNote").style.display = "none"; document.getElementById("formPatientRow").style.display = "none";
+    renderFormFields(currentTemplate.fields, form.data, true);
+    showView("form-fill");
+  }
+  document.getElementById("formBackBtn").addEventListener("click", function () { if (formReturnTo) { var pid = formReturnTo; formReturnTo = null; openPatient(pid); } else { showView("forms"); } });
+  document.getElementById("newFormFromDetail").addEventListener("click", function () { pendingPatientId = currentPatientId; formReturnTo = currentPatientId; showView("forms"); });
+
+  document.getElementById("formFillForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!currentTemplate) return;
+    var vals = collectFormValues(currentTemplate.fields);
+    var submitBtn = document.getElementById("formSubmitBtn"); submitBtn.disabled = true;
+
+    if (currentTemplate.isNewPatient) {
+      var newPatient = { name: vals.fullName || "New patient", dob: vals.dob || "", allergies: vals.allergies ? [vals.allergies] : [], meds: [], vitals: {}, visits: [] };
+      apiFetch("/patients", { method: "POST", body: JSON.stringify(newPatient) }).then(function (created) {
+        return apiFetch("/forms", { method: "POST", body: JSON.stringify({ patientId: created.id, templateId: currentTemplate.id, templateName: currentTemplate.name, data: vals }) }).then(function () { return created; });
+      }).then(function (created) {
+        showToast("New patient added: " + created.name + ".");
+        formReturnTo = null;
+        return loadAll().then(function () { openPatient(created.id); });
+      }).catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+    } else {
+      var patientId = document.getElementById("formPatientSelect").value; var p = patientById(patientId);
+      apiFetch("/forms", { method: "POST", body: JSON.stringify({ patientId: patientId, templateId: currentTemplate.id, templateName: currentTemplate.name, data: vals }) }).then(function () {
+        showToast(currentTemplate.name + " saved to " + (p ? p.name : "patient") + "'s chart.");
+        formReturnTo = null;
+        return loadAll().then(function () { if (p) openPatient(p.id); else showView("forms"); });
+      }).catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+    }
+  });
+
+  function renderPatientForms(patientId) {
+    var list = state.forms.filter(function (f) { return f.patientId === patientId; }).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    var el = document.getElementById("patientForms");
+    el.innerHTML = !list.length ? '<div class="empty-state">No forms on file yet.</div>' : list.map(function (f) {
+      return '<div class="row-item forms-list-row" data-form="' + f.id + '"><div class="row-time data">' + fmtDate(f.date) + '</div><div class="row-main"><div class="row-title">' + f.templateName + '</div></div></div>';
+    }).join("");
+  }
+  document.getElementById("patientForms").addEventListener("click", function (e) { var row = e.target.closest("[data-form]"); if (row) viewSubmittedForm(row.getAttribute("data-form")); });
+
+  // ============================================================
+  // Labs
+  // ============================================================
+  var currentLabId = null;
+  function renderLabsTable() {
+    var body = document.getElementById("labsTableBody");
+    var list = state.labs.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    if (!list.length) { body.innerHTML = '<tr><td colspan="5"><div class="empty-state">No lab or imaging orders yet.</div></td></tr>'; return; }
+    body.innerHTML = list.map(function (l) {
+      var p = patientById(l.patientId);
+      return '<tr class="clickable" data-lab="' + l.id + '"><td class="patient-name">' + (p ? p.name : "Unknown patient") + '</td><td>' + l.testName + '</td><td>' + l.type + '</td>' +
+        '<td><span class="' + statusTagClass(l.status) + '">' + l.status + '</span></td><td>' + fmtDate(l.date) + '</td></tr>';
+    }).join("");
+  }
+  document.getElementById("labsTableBody").addEventListener("click", function (e) { var row = e.target.closest("[data-lab]"); if (row) openLabOrder(row.getAttribute("data-lab")); });
+  document.getElementById("addLabBtn").addEventListener("click", function () {
+    currentLabId = null;
+    document.getElementById("labPanelTitle").textContent = "New lab or imaging order"; document.getElementById("labSubmitBtn").textContent = "Order test";
+    document.getElementById("labPatientRow").style.display = "";
+    populateSelect(document.getElementById("labPatient")); if (currentPatientId) document.getElementById("labPatient").value = currentPatientId;
+    document.getElementById("labTestName").value = ""; document.getElementById("labTestName").disabled = false;
+    document.getElementById("labType").value = "Lab"; document.getElementById("labType").disabled = false;
+    document.getElementById("labStatusRow").style.display = "none"; document.getElementById("labResultRow").style.display = "none"; document.getElementById("labResult").value = "";
+    showView("lab-order");
+  });
+  function openLabOrder(id) {
+    var l = state.labs.filter(function (x) { return x.id === id; })[0]; if (!l) return;
+    currentLabId = id; var p = patientById(l.patientId);
+    document.getElementById("labPanelTitle").textContent = (p ? p.name : "Patient") + " — " + l.testName; document.getElementById("labSubmitBtn").textContent = "Save";
+    document.getElementById("labPatientRow").style.display = "none";
+    document.getElementById("labTestName").value = l.testName; document.getElementById("labTestName").disabled = true;
+    document.getElementById("labType").value = l.type; document.getElementById("labType").disabled = true;
+    document.getElementById("labStatusRow").style.display = ""; document.getElementById("labStatus").value = l.status;
+    document.getElementById("labResultRow").style.display = ""; document.getElementById("labResult").value = l.result || "";
+    showView("lab-order");
+  }
+  document.getElementById("labBackBtn").addEventListener("click", function () { showView("labs"); });
+  document.getElementById("labOrderForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var submitBtn = document.getElementById("labSubmitBtn"); submitBtn.disabled = true;
+    var req = currentLabId
+      ? apiFetch("/labs/" + currentLabId, { method: "PATCH", body: JSON.stringify({ status: document.getElementById("labStatus").value, result: document.getElementById("labResult").value }) })
+      : apiFetch("/labs", { method: "POST", body: JSON.stringify({ patientId: document.getElementById("labPatient").value, testName: document.getElementById("labTestName").value || "Untitled test", type: document.getElementById("labType").value }) });
+    req.then(function () { showToast(currentLabId ? "Lab order updated." : "Test ordered."); return loadAll().then(function () { showView("labs"); }); })
+      .catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+  });
+
+  // ============================================================
+  // Billing
+  // ============================================================
+  var currentChargeId = null;
+  function renderBillingTable() {
+    var body = document.getElementById("billingTableBody");
+    var list = state.charges.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    if (!list.length) { body.innerHTML = '<tr><td colspan="5"><div class="empty-state">No charges yet.</div></td></tr>'; return; }
+    body.innerHTML = list.map(function (c) {
+      var p = patientById(c.patientId);
+      return '<tr class="clickable" data-charge="' + c.id + '"><td class="patient-name">' + (p ? p.name : "Unknown patient") + '</td><td>' + c.description + '</td><td class="mrn">' + c.amount + '</td>' +
+        '<td><span class="' + statusTagClass(c.status) + '">' + c.status + '</span></td><td>' + fmtDate(c.date) + '</td></tr>';
+    }).join("");
+  }
+  document.getElementById("billingTableBody").addEventListener("click", function (e) { var row = e.target.closest("[data-charge]"); if (row) openCharge(row.getAttribute("data-charge")); });
+  document.getElementById("addChargeBtn").addEventListener("click", function () {
+    currentChargeId = null;
+    document.getElementById("chargePanelTitle").textContent = "New charge"; document.getElementById("chargeSubmitBtn").textContent = "Save charge";
+    document.getElementById("chargePatientRow").style.display = "";
+    populateSelect(document.getElementById("chargePatient")); if (currentPatientId) document.getElementById("chargePatient").value = currentPatientId;
+    document.getElementById("chargeDesc").value = ""; document.getElementById("chargeDesc").disabled = false;
+    document.getElementById("chargeAmount").value = ""; document.getElementById("chargePayer").value = ""; document.getElementById("chargeStatus").value = "Pending";
+    showView("billing-charge");
+  });
+  function openCharge(id) {
+    var c = state.charges.filter(function (x) { return x.id === id; })[0]; if (!c) return;
+    currentChargeId = id; var p = patientById(c.patientId);
+    document.getElementById("chargePanelTitle").textContent = (p ? p.name : "Patient") + " — " + c.description; document.getElementById("chargeSubmitBtn").textContent = "Save";
+    document.getElementById("chargePatientRow").style.display = "none";
+    document.getElementById("chargeDesc").value = c.description; document.getElementById("chargeDesc").disabled = true;
+    document.getElementById("chargeAmount").value = c.amount; document.getElementById("chargePayer").value = c.payer || ""; document.getElementById("chargeStatus").value = c.status;
+    showView("billing-charge");
+  }
+  document.getElementById("chargeBackBtn").addEventListener("click", function () { showView("billing"); });
+  document.getElementById("chargeForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var submitBtn = document.getElementById("chargeSubmitBtn"); submitBtn.disabled = true;
+    var req = currentChargeId
+      ? apiFetch("/charges/" + currentChargeId, { method: "PATCH", body: JSON.stringify({ amount: document.getElementById("chargeAmount").value, payer: document.getElementById("chargePayer").value, status: document.getElementById("chargeStatus").value }) })
+      : apiFetch("/charges", { method: "POST", body: JSON.stringify({ patientId: document.getElementById("chargePatient").value, description: document.getElementById("chargeDesc").value || "Office visit", amount: document.getElementById("chargeAmount").value || "$0.00", payer: document.getElementById("chargePayer").value, status: document.getElementById("chargeStatus").value }) });
+    req.then(function () { showToast(currentChargeId ? "Charge updated." : "Charge saved."); return loadAll().then(function () { showView("billing"); }); })
+      .catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+  });
+
+  // ============================================================
+  // Reports
+  // ============================================================
+  function renderReports() {
+    var monthPrefix = isoDate(daysFromToday(0)).slice(0, 7);
+    var visitsThisMonth = state.appointments.filter(function (a) { return (a.date || "").indexOf(monthPrefix) === 0; }).length;
+    var rxThisMonth = state.prescriptions.filter(function (rx) { return (rx.date || "").indexOf(monthPrefix) === 0; }).length;
+    var formsThisMonth = state.forms.filter(function (f) { return (f.date || "").indexOf(monthPrefix) === 0; }).length;
+    var stats = [
+      { num: state.patients.length, label: "Total patients" }, { num: visitsThisMonth, label: "Visits this month" },
+      { num: rxThisMonth, label: "Prescriptions this month" }, { num: formsThisMonth, label: "Forms completed this month" }
+    ];
+    document.getElementById("reportsStatRow").innerHTML = stats.map(function (s) { return '<div class="stat-card"><div class="stat-num data">' + s.num + '</div><div class="stat-label">' + s.label + '</div></div>'; }).join("");
+
+    var totalPatients = state.patients.length || 1;
+    var withHipaa = state.patients.filter(function (p) { return state.forms.some(function (f) { return f.patientId === p.id && f.templateId === "hipaa"; }); }).length;
+    var withConsent = state.patients.filter(function (p) { return state.forms.some(function (f) { return f.patientId === p.id && f.templateId === "consent-treatment"; }); }).length;
+    var hipaaPct = Math.round((withHipaa / totalPatients) * 100); var consentPct = Math.round((withConsent / totalPatients) * 100);
+    document.getElementById("complianceSnapshot").innerHTML = state.patients.length
+      ? '<div class="row-item"><div class="row-main"><div class="row-title">HIPAA privacy acknowledgment on file</div><div class="row-sub">' + withHipaa + ' of ' + state.patients.length + ' patients</div></div><span class="tag ' + (hipaaPct >= 80 ? "positive" : "alert") + '">' + hipaaPct + '%</span></div>' +
+        '<div class="row-item"><div class="row-main"><div class="row-title">Consent for treatment on file</div><div class="row-sub">' + withConsent + ' of ' + state.patients.length + ' patients</div></div><span class="tag ' + (consentPct >= 80 ? "positive" : "alert") + '">' + consentPct + '%</span></div>'
+      : '<div class="empty-state">Add patients to see compliance stats.</div>';
+
+    var counts = {};
+    function tally(list) { list.forEach(function (item) { if (!item.createdById) return; counts[item.createdById] = (counts[item.createdById] || 0) + 1; }); }
+    tally(state.appointments); tally(state.prescriptions); tally(state.forms);
+    var ids = Object.keys(counts); var teamEl = document.getElementById("teamActivity");
+    teamEl.innerHTML = !ids.length ? '<div class="empty-state">No tracked activity yet.</div>' : ids.sort(function (a, b) { return counts[b] - counts[a]; }).map(function (id) {
+      var name = getName(id) || "Team member";
+      return '<div class="row-item"><div class="row-main"><div class="row-title">' + name + '</div></div><span class="tag">' + counts[id] + ' action' + (counts[id] === 1 ? "" : "s") + '</span></div>';
+    }).join("");
+  }
+
+  // ============================================================
+  // Tasks
+  // ============================================================
+  var currentTaskId = null;
+  function populateTaskPatientSelect() {
+    var sel = document.getElementById("taskPatient");
+    sel.innerHTML = '<option value="">None</option>' + state.patients.map(function (p) { return '<option value="' + p.id + '">' + p.name + '</option>'; }).join("");
+  }
+  document.getElementById("addTaskBtn").addEventListener("click", function () {
+    currentTaskId = null;
+    document.getElementById("taskPanelTitle").textContent = "New task"; document.getElementById("taskSubmitBtn").textContent = "Save task";
+    populateTaskPatientSelect();
+    document.getElementById("taskTitle").value = ""; document.getElementById("taskDue").value = ""; document.getElementById("taskStatus").value = "To do"; document.getElementById("taskNotes").value = "";
+    showView("task-form");
+  });
+  function openTask(id) {
+    var t = state.tasks.filter(function (x) { return x.id === id; })[0]; if (!t) return;
+    currentTaskId = id;
+    document.getElementById("taskPanelTitle").textContent = "Edit task"; document.getElementById("taskSubmitBtn").textContent = "Save";
+    populateTaskPatientSelect();
+    document.getElementById("taskTitle").value = t.title; document.getElementById("taskPatient").value = t.patientId || "";
+    document.getElementById("taskDue").value = t.dueDate || ""; document.getElementById("taskStatus").value = t.status; document.getElementById("taskNotes").value = t.notes || "";
+    showView("task-form");
+  }
+  document.getElementById("taskBackBtn").addEventListener("click", function () { showView("tasks"); });
+  document.getElementById("taskForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var submitBtn = document.getElementById("taskSubmitBtn"); submitBtn.disabled = true;
+    var payload = { title: document.getElementById("taskTitle").value || "Untitled task", patientId: document.getElementById("taskPatient").value || null, dueDate: document.getElementById("taskDue").value || "", status: document.getElementById("taskStatus").value, notes: document.getElementById("taskNotes").value };
+    var req = currentTaskId ? apiFetch("/tasks/" + currentTaskId, { method: "PATCH", body: JSON.stringify(payload) }) : apiFetch("/tasks", { method: "POST", body: JSON.stringify(payload) });
+    req.then(function () { showToast(currentTaskId ? "Task updated." : "Task saved."); return loadAll().then(function () { showView("tasks"); }); })
+      .catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+  });
+  function renderTasksTable() {
+    var body = document.getElementById("tasksTableBody");
+    var order = { "To do": 0, "In progress": 1, "Done": 2 };
+    var list = state.tasks.slice().sort(function (a, b) { return (order[a.status] || 0) - (order[b.status] || 0) || (a.dueDate || "").localeCompare(b.dueDate || ""); });
+    if (!list.length) { body.innerHTML = '<tr><td colspan="4"><div class="empty-state">No tasks yet.</div></td></tr>'; return; }
+    body.innerHTML = list.map(function (t) {
+      var p = t.patientId ? patientById(t.patientId) : null;
+      return '<tr class="clickable" data-task="' + t.id + '"><td class="patient-name">' + t.title + '</td><td>' + (p ? p.name : '<span class="row-sub">—</span>') + '</td>' +
+        '<td>' + (t.dueDate ? fmtDate(t.dueDate) : '<span class="row-sub">No due date</span>') + '</td><td><span class="tag' + (t.status === "Done" ? " positive" : "") + '">' + t.status + '</span></td></tr>';
+    }).join("");
+  }
+  document.getElementById("tasksTableBody").addEventListener("click", function (e) { var row = e.target.closest("[data-task]"); if (row) openTask(row.getAttribute("data-task")); });
+
+  // ============================================================
+  // Injections
+  // ============================================================
+  document.getElementById("addInjectionBtn").addEventListener("click", function () {
+    populateSelect(document.getElementById("injectionPatient")); if (currentPatientId) document.getElementById("injectionPatient").value = currentPatientId;
+    document.getElementById("injectionName").value = ""; document.getElementById("injectionDose").value = ""; document.getElementById("injectionSite").value = ""; document.getElementById("injectionLot").value = "";
+    showView("injection-form");
+  });
+  document.getElementById("injectionBackBtn").addEventListener("click", function () { showView("injections"); });
+  document.getElementById("injectionForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var submitBtn = document.getElementById("injectionSubmitBtn"); submitBtn.disabled = true;
+    var data = { patientId: document.getElementById("injectionPatient").value, name: document.getElementById("injectionName").value || "Unspecified", dose: document.getElementById("injectionDose").value, site: document.getElementById("injectionSite").value, lot: document.getElementById("injectionLot").value };
+    apiFetch("/injections", { method: "POST", body: JSON.stringify(data) }).then(function () { showToast("Injection logged."); return loadAll().then(function () { showView("injections"); }); })
+      .catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+  });
+  function renderInjectionsTable() {
+    var body = document.getElementById("injectionsTableBody");
+    var list = state.injections.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    if (!list.length) { body.innerHTML = '<tr><td colspan="4"><div class="empty-state">No injections logged yet.</div></td></tr>'; return; }
+    body.innerHTML = list.map(function (i) {
+      var p = patientById(i.patientId);
+      return '<tr><td class="patient-name">' + (p ? p.name : "Unknown patient") + '</td><td>' + i.name + (i.dose ? " · " + i.dose : "") + '</td><td>' + (i.site || '<span class="row-sub">—</span>') + '</td><td>' + fmtDate(i.date) + '</td></tr>';
+    }).join("");
+  }
+
+  // ============================================================
+  // Referrals
+  // ============================================================
+  var currentReferralId = null;
+  document.getElementById("addReferralBtn").addEventListener("click", function () {
+    currentReferralId = null;
+    document.getElementById("referralPanelTitle").textContent = "New referral"; document.getElementById("referralSubmitBtn").textContent = "Save referral";
+    document.getElementById("referralPatientRow").style.display = "";
+    populateSelect(document.getElementById("referralPatient")); if (currentPatientId) document.getElementById("referralPatient").value = currentPatientId;
+    document.getElementById("referralSpecialty").value = ""; document.getElementById("referralTo").value = ""; document.getElementById("referralStatus").value = "Sent"; document.getElementById("referralReason").value = "";
+    showView("referral-form");
+  });
+  function openReferral(id) {
+    var r = state.referrals.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+    currentReferralId = id; var p = patientById(r.patientId);
+    document.getElementById("referralPanelTitle").textContent = (p ? p.name : "Patient") + " — " + r.specialty; document.getElementById("referralSubmitBtn").textContent = "Save";
+    document.getElementById("referralPatientRow").style.display = "none";
+    document.getElementById("referralSpecialty").value = r.specialty; document.getElementById("referralTo").value = r.referredTo; document.getElementById("referralStatus").value = r.status; document.getElementById("referralReason").value = r.reason || "";
+    showView("referral-form");
+  }
+  document.getElementById("referralBackBtn").addEventListener("click", function () { showView("referrals"); });
+  document.getElementById("referralForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var submitBtn = document.getElementById("referralSubmitBtn"); submitBtn.disabled = true;
+    var payload = { specialty: document.getElementById("referralSpecialty").value || "General", referredTo: document.getElementById("referralTo").value, status: document.getElementById("referralStatus").value, reason: document.getElementById("referralReason").value };
+    var req = currentReferralId ? apiFetch("/referrals/" + currentReferralId, { method: "PATCH", body: JSON.stringify(payload) })
+      : apiFetch("/referrals", { method: "POST", body: JSON.stringify(Object.assign({ patientId: document.getElementById("referralPatient").value }, payload)) });
+    req.then(function () { showToast(currentReferralId ? "Referral updated." : "Referral saved."); return loadAll().then(function () { showView("referrals"); }); })
+      .catch(function () { showToast("Couldn't save — please try again."); }).finally(function () { submitBtn.disabled = false; });
+  });
+  function renderReferralsTable() {
+    var body = document.getElementById("referralsTableBody");
+    var list = state.referrals.slice().sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+    if (!list.length) { body.innerHTML = '<tr><td colspan="5"><div class="empty-state">No referrals yet.</div></td></tr>'; return; }
+    body.innerHTML = list.map(function (r) {
+      var p = patientById(r.patientId);
+      return '<tr class="clickable" data-referral="' + r.id + '"><td class="patient-name">' + (p ? p.name : "Unknown patient") + '</td><td>' + r.specialty + '</td><td>' + (r.referredTo || '<span class="row-sub">—</span>') + '</td>' +
+        '<td><span class="tag' + (r.status === "Completed" ? " positive" : "") + '">' + r.status + '</span></td><td>' + fmtDate(r.date) + '</td></tr>';
+    }).join("");
+  }
+  document.getElementById("referralsTableBody").addEventListener("click", function (e) { var row = e.target.closest("[data-referral]"); if (row) openReferral(row.getAttribute("data-referral")); });
+
+  // ============================================================
+  // e-Prescribe
+  // ============================================================
+  function populateSelect(select) {
+    if (!select) return;
+    select.innerHTML = state.patients.map(function (p) { return '<option value="' + p.id + '">' + p.name + ' — ' + p.mrn + '</option>'; }).join("");
+  }
+  function checkRxSafety() {
+    var warnEl = document.getElementById("rxWarning");
+    var patientId = document.getElementById("rxPatient").value; var med = document.getElementById("rxMed").value.trim().toLowerCase();
+    var p = patientById(patientId);
+    if (!p || !med) { warnEl.style.display = "none"; return; }
+    var messages = [];
+    (p.allergies || []).forEach(function (a) { if (a && med.indexOf(a.toLowerCase()) > -1) messages.push("Documented allergy to " + a + "."); });
+    (p.meds || []).forEach(function (m) { if (m.name && med.indexOf(m.name.toLowerCase()) > -1) messages.push("Already taking " + m.name + " — check for duplicate therapy."); });
+    if (messages.length) { warnEl.innerHTML = "<strong>Check before prescribing:</strong> " + messages.join(" "); warnEl.style.display = ""; } else { warnEl.style.display = "none"; }
+  }
+  document.getElementById("rxMed").addEventListener("input", checkRxSafety);
+  document.getElementById("rxPatient").addEventListener("change", checkRxSafety);
+  document.getElementById("prescribeFromDetail").addEventListener("click", function () {
+    populateSelect(document.getElementById("rxPatient")); if (currentPatientId) document.getElementById("rxPatient").value = currentPatientId; checkRxSafety(); showView("prescribe");
+  });
+  document.getElementById("rxForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var patientId = document.getElementById("rxPatient").value; var p = patientById(patientId);
+    var rx = { patientId: patientId, medication: document.getElementById("rxMed").value, dose: document.getElementById("rxDose").value, freq: document.getElementById("rxFreq").value, qty: document.getElementById("rxQty").value || "Not specified", pharmacy: document.getElementById("rxPharmacy").value };
+    var formEl = e.target;
+    apiFetch("/prescriptions", { method: "POST", body: JSON.stringify(rx) }).then(function () {
+      formEl.reset(); document.getElementById("rxWarning").style.display = "none";
+      showToast("Prescription sent to " + rx.pharmacy + " for " + (p ? p.name : "patient") + ".");
+      return loadAll().then(function () { showView("dashboard"); });
+    }).catch(function () { showToast("Couldn't save — please try again."); });
+  });
+
+  // ============================================================
+  // Team
+  // ============================================================
+  function renderTeamList() {
+    var el = document.getElementById("teamList");
+    if (!teamRoster.length) { el.innerHTML = '<div class="empty-state">Loading team…</div>'; return; }
+    el.innerHTML = teamRoster.map(function (u) {
+      var roleLabel = u.role === "owner" ? "Clinic manager" : (u.role === "staff" ? "Staff" : "Practitioner");
+      var isYou = currentUser && u.id === currentUser.id;
+      return '<div class="row-item"><div class="row-main"><div class="row-title">' + u.name + (isYou ? " (you)" : "") + '</div><div class="row-sub">' + u.email + '</div></div><span class="tag">' + roleLabel + '</span></div>';
+    }).join("");
+    document.getElementById("invitePanel").style.display = (currentUser && currentUser.role === "owner") ? "" : "none";
+  }
+  document.getElementById("inviteForm").addEventListener("submit", function (e) {
+    e.preventDefault(); var btn = document.getElementById("inviteSubmitBtn"); btn.disabled = true;
+    apiFetch("/auth/invite", { method: "POST", body: JSON.stringify({
+      name: document.getElementById("inviteName").value, email: document.getElementById("inviteEmail").value,
+      password: document.getElementById("invitePassword").value, role: document.getElementById("inviteRole").value
+    }) }).then(function () {
+      showToast("Teammate added."); e.target.reset();
+      return loadTeam().then(renderTeamList);
+    }).catch(function (err) { showToast(err.message || "Couldn't add teammate."); }).finally(function () { btn.disabled = false; });
+  });
+
+  // ============================================================
+  // Theme toggle (device-local preference, no backend involved)
+  // ============================================================
+  var themeBtn = document.getElementById("themeToggle");
+  var moonIcon = document.getElementById("themeIconMoon");
+  var sunIcon = document.getElementById("themeIconSun");
+  function setToggleIcon(theme) { var isDark = theme === "dark"; moonIcon.style.display = isDark ? "none" : ""; sunIcon.style.display = isDark ? "" : "none"; }
+  function applyStoredTheme() {
+    var saved = null; try { saved = localStorage.getItem("vitapulse_theme"); } catch (e) {}
+    if (saved === "dark" || saved === "light") { document.documentElement.setAttribute("data-theme", saved); setToggleIcon(saved); }
+  }
+  themeBtn.addEventListener("click", function () {
+    var current = document.documentElement.getAttribute("data-theme"); var next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next); setToggleIcon(next);
+    try { localStorage.setItem("vitapulse_theme", next); } catch (e) {}
+  });
+  applyStoredTheme();
+
+  // ============================================================
+  // Init
+  // ============================================================
+  var saved = loadAuthFromStorage();
+  if (saved && saved.token) {
+    authToken = saved.token;
+    currentUser = saved.user;
+    startApp();
+  } else {
+    document.getElementById("authScreen").style.display = "flex";
+  }
+})();
+</script>
+</body>
+</html>
